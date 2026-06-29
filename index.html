@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VyznIQ — See the Game. Know the Game. Win the Game.</title>
+  <meta name="description" content="VyznIQ builds brain-training apps for football. FBIQ is the football knowledge platform for players, coaches, officials, and fans at every level.">
+  <style>
+    * { margin:0; padding:0; box-sizing:border-box; }
+    html { scroll-behavior:smooth; }
+    body {
+      background:#0a0a0a;
+      color:#fff;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      min-height:100vh;
+    }
+
+    /* NAV */
+    nav {
+      position:fixed; top:0; left:0; right:0; z-index:100;
+      padding:16px 32px;
+      display:flex; align-items:center; justify-content:space-between;
+      background:rgba(10,10,10,0.92);
+      border-bottom:1px solid rgba(255,255,255,0.08);
+      backdrop-filter:blur(8px);
+    }
+    .nav-logo { font-size:1.4rem; font-weight:900; letter-spacing:1px; }
+    .nav-logo span.vyzn { color:#fff; }
+    .nav-logo span.iq   { color:#1a56db; }
+    .nav-cta {
+      background:#F52C05; color:#fff; border:none; border-radius:8px;
+      padding:10px 20px; font-size:0.85rem; font-weight:800;
+      cursor:pointer; text-decoration:none; letter-spacing:0.5px;
+      transition:background 0.15s;
+    }
+    .nav-cta:hover { background:#d42504; }
+
+    /* HERO */
+    .hero {
+      min-height:100vh;
+      display:flex; flex-direction:column;
+      align-items:center; justify-content:center;
+      text-align:center;
+      padding:100px 24px 60px;
+      background: radial-gradient(ellipse at top, rgba(245,44,5,0.12) 0%, transparent 60%);
+    }
+    .hero-eyebrow {
+      font-size:0.7rem; font-weight:900; letter-spacing:3px;
+      text-transform:uppercase; color:#F52C05; margin-bottom:20px;
+    }
+    .hero-logo {
+      font-size:clamp(3rem, 10vw, 6rem);
+      font-weight:900; letter-spacing:2px; line-height:1;
+      margin-bottom:16px;
+    }
+    .hero-logo .fb { color:#F52C05; }
+    .hero-logo .iq { color:#fff; }
+    .hero-tagline {
+      font-size:clamp(1rem, 3vw, 1.4rem);
+      font-weight:700; color:#F52C05;
+      letter-spacing:1px; margin-bottom:12px;
+    }
+    .hero-sub {
+      font-size:clamp(0.9rem, 2vw, 1.1rem);
+      color:rgba(255,255,255,0.6);
+      max-width:560px; line-height:1.6; margin-bottom:40px;
+    }
+    .hero-btns { display:flex; gap:12px; flex-wrap:wrap; justify-content:center; }
+    .btn-primary {
+      background:#F52C05; color:#fff; border:none; border-radius:10px;
+      padding:16px 32px; font-size:1rem; font-weight:800;
+      cursor:pointer; text-decoration:none; transition:background 0.15s;
+      letter-spacing:0.5px;
+    }
+    .btn-primary:hover { background:#d42504; }
+    .btn-outline {
+      background:transparent; color:#fff;
+      border:2px solid rgba(255,255,255,0.3); border-radius:10px;
+      padding:16px 32px; font-size:1rem; font-weight:700;
+      cursor:pointer; text-decoration:none; transition:border-color 0.15s, color 0.15s;
+    }
+    .btn-outline:hover { border-color:#fff; }
+
+    /* FEATURES */
+    .section {
+      padding:80px 24px;
+      max-width:1000px; margin:0 auto;
+    }
+    .section-label {
+      font-size:0.65rem; font-weight:900; letter-spacing:3px;
+      text-transform:uppercase; color:#F52C05; margin-bottom:12px;
+      text-align:center;
+    }
+    .section-title {
+      font-size:clamp(1.6rem, 4vw, 2.4rem);
+      font-weight:900; text-align:center; margin-bottom:48px;
+      line-height:1.2;
+    }
+    .features-grid {
+      display:grid;
+      grid-template-columns:repeat(auto-fit, minmax(260px, 1fr));
+      gap:20px;
+    }
+    .feature-card {
+      background:rgba(255,255,255,0.04);
+      border:2px solid rgba(255,255,255,0.08);
+      border-radius:16px; padding:28px 24px;
+      transition:border-color 0.15s, background 0.15s;
+    }
+    .feature-card:hover {
+      border-color:rgba(245,44,5,0.4);
+      background:rgba(245,44,5,0.05);
+    }
+    .feature-icon { font-size:2rem; margin-bottom:12px; }
+    .feature-name { font-size:1rem; font-weight:800; margin-bottom:8px; }
+    .feature-desc { font-size:0.85rem; color:rgba(255,255,255,0.55); line-height:1.5; }
+
+    /* WHO */
+    .who-grid {
+      display:grid;
+      grid-template-columns:repeat(auto-fit, minmax(180px, 1fr));
+      gap:16px;
+    }
+    .who-card {
+      background:rgba(255,255,255,0.04);
+      border:2px solid rgba(255,255,255,0.08);
+      border-radius:14px; padding:24px 16px;
+      text-align:center;
+    }
+    .who-icon { font-size:2.2rem; margin-bottom:10px; }
+    .who-name { font-size:0.9rem; font-weight:800; margin-bottom:4px; }
+    .who-desc { font-size:0.75rem; color:rgba(255,255,255,0.5); line-height:1.4; }
+
+    /* PRICING */
+    .pricing-grid {
+      display:grid;
+      grid-template-columns:repeat(auto-fit, minmax(260px, 1fr));
+      gap:20px; align-items:start;
+    }
+    .pricing-card {
+      background:rgba(255,255,255,0.04);
+      border:2px solid rgba(255,255,255,0.12);
+      border-radius:16px; padding:32px 24px;
+    }
+    .pricing-card.featured {
+      border-color:#F52C05;
+      background:rgba(245,44,5,0.06);
+    }
+    .pricing-badge {
+      display:inline-block;
+      background:#F52C05; color:#fff;
+      font-size:0.6rem; font-weight:900; letter-spacing:1.5px;
+      text-transform:uppercase; border-radius:4px;
+      padding:3px 8px; margin-bottom:12px;
+    }
+    .pricing-name { font-size:1.1rem; font-weight:900; margin-bottom:4px; }
+    .pricing-price {
+      font-size:2.2rem; font-weight:900; margin-bottom:4px; color:#fff;
+    }
+    .pricing-price span { font-size:0.9rem; font-weight:500; color:rgba(255,255,255,0.5); }
+    .pricing-sub { font-size:0.75rem; color:rgba(255,255,255,0.4); margin-bottom:20px; }
+    .pricing-list { list-style:none; display:flex; flex-direction:column; gap:8px; margin-bottom:24px; }
+    .pricing-list li { font-size:0.82rem; color:rgba(255,255,255,0.75); }
+    .pricing-btn {
+      display:block; width:100%; text-align:center;
+      background:#F52C05; color:#fff; border:none; border-radius:10px;
+      padding:14px; font-size:0.9rem; font-weight:800;
+      cursor:pointer; text-decoration:none; transition:background 0.15s;
+    }
+    .pricing-btn:hover { background:#d42504; }
+    .pricing-btn.outline {
+      background:transparent; border:2px solid rgba(255,255,255,0.25); color:#fff;
+    }
+    .pricing-btn.outline:hover { border-color:#fff; background:transparent; }
+
+    /* FOOTER */
+    footer {
+      border-top:1px solid rgba(255,255,255,0.08);
+      padding:40px 24px; text-align:center;
+    }
+    .footer-logo { font-size:1.1rem; font-weight:900; margin-bottom:8px; }
+    .footer-logo .vyzn { color:#fff; }
+    .footer-logo .iq   { color:#1a56db; }
+    .footer-tagline { font-size:0.75rem; color:rgba(255,255,255,0.35); margin-bottom:16px; }
+    .footer-links { display:flex; gap:24px; justify-content:center; flex-wrap:wrap; }
+    .footer-links a { font-size:0.78rem; color:rgba(255,255,255,0.4); text-decoration:none; }
+    .footer-links a:hover { color:#fff; }
+    .footer-copy { font-size:0.7rem; color:rgba(255,255,255,0.2); margin-top:20px; }
+
+    /* DIVIDER */
+    .divider {
+      border:none;
+      border-top:1px solid rgba(255,255,255,0.07);
+      margin:0;
+    }
+
+    @media (max-width:600px) {
+      nav { padding:14px 20px; }
+      .hero-btns { flex-direction:column; align-items:center; }
+      .btn-primary, .btn-outline { width:100%; max-width:320px; text-align:center; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav>
+    <div class="nav-logo"><span class="vyzn">Vyzn</span><span class="iq">IQ</span></div>
+    <a href="https://fbiq.app" class="nav-cta">Play FBIQ Free →</a>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-eyebrow">Introducing FBIQ by VyznIQ</div>
+    <div class="hero-logo"><span class="fb">FB</span><span class="iq">IQ</span></div>
+    <div class="hero-tagline">See the Game &nbsp;|&nbsp; Know the Game &nbsp;|&nbsp; Win the Game</div>
+    <p class="hero-sub">The football brain-training app for everyone who touches the game — players from pee wee to college, coaches, officials, and fans at every level.</p>
+    <div class="hero-btns">
+      <a href="https://fbiq.app" class="btn-primary">Play FBIQ Free 🏈</a>
+      <a href="#pricing" class="btn-outline">See Pricing</a>
+    </div>
+  </section>
+
+  <hr class="divider">
+
+  <!-- FEATURES -->
+  <section class="section">
+    <div class="section-label">What's Inside</div>
+    <h2 class="section-title">Everything You Need to<br>Master the Game</h2>
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon">📋</div>
+        <div class="feature-name">Rules Knowledge</div>
+        <div class="feature-desc">NCAA, NFL, NFHS, and Texas HS rules — quiz yourself on the rulebook at every level.</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">📖</div>
+        <div class="feature-name">Terminology</div>
+        <div class="feature-desc">Learn the language of football — from basic concepts to advanced X's and O's vocabulary.</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">⚡</div>
+        <div class="feature-name">Situations</div>
+        <div class="feature-desc">Real game scenarios for players, coaches, officials, and fans. What would you do?</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🏃</div>
+        <div class="feature-name">Position Knowledge</div>
+        <div class="feature-desc">Deep-dive into every position — QB, OL, WR, RB, DL, LB, DB, and coordinator roles.</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🎯</div>
+        <div class="feature-name">Daily Challenge</div>
+        <div class="feature-desc">5 questions every day. Build your streak, earn XP, and climb the leaderboard.</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🎮</div>
+        <div class="feature-name">Multiple Modes</div>
+        <div class="feature-desc">Quiz, Flashcards, Game Mode, Test Mode, and FBhoot live classroom — learn your way.</div>
+      </div>
+    </div>
+  </section>
+
+  <hr class="divider">
+
+  <!-- WHO -->
+  <section class="section">
+    <div class="section-label">Built For</div>
+    <h2 class="section-title">Everyone Who Touches the Game</h2>
+    <div class="who-grid">
+      <div class="who-card">
+        <div class="who-icon">🏈</div>
+        <div class="who-name">Players</div>
+        <div class="who-desc">Pee wee through college — know your position inside and out.</div>
+      </div>
+      <div class="who-card">
+        <div class="who-icon">📋</div>
+        <div class="who-name">Coaches</div>
+        <div class="who-desc">Rules mastery, situational knowledge, coordinator concepts.</div>
+      </div>
+      <div class="who-card">
+        <div class="who-icon">🟡</div>
+        <div class="who-name">Officials</div>
+        <div class="who-desc">Stay sharp on the rulebook at every level of the game.</div>
+      </div>
+      <div class="who-card">
+        <div class="who-icon">📺</div>
+        <div class="who-name">Fans</div>
+        <div class="who-desc">Finally understand what's happening on every play.</div>
+      </div>
+    </div>
+  </section>
+
+  <hr class="divider">
+
+  <!-- PRICING -->
+  <section class="section" id="pricing">
+    <div class="section-label">Pricing</div>
+    <h2 class="section-title">Start Free. Upgrade Anytime.</h2>
+    <div class="pricing-grid">
+
+      <div class="pricing-card">
+        <div class="pricing-name">Free</div>
+        <div class="pricing-price">$0</div>
+        <div class="pricing-sub">No credit card required</div>
+        <ul class="pricing-list">
+          <li>✅ 2 trivia rounds per day</li>
+          <li>✅ NCAA &amp; NFL Trivia</li>
+          <li>⬜ Rules &amp; Terminology</li>
+          <li>⬜ Position Knowledge</li>
+          <li>⬜ Daily Challenge &amp; XP</li>
+          <li>⬜ Leaderboards</li>
+        </ul>
+        <a href="https://fbiq.app" class="pricing-btn outline">Play Free →</a>
+      </div>
+
+      <div class="pricing-card featured">
+        <div class="pricing-badge">Most Popular</div>
+        <div class="pricing-name">FBIQ Full Access</div>
+        <div class="pricing-price">$2.99 <span>/month</span></div>
+        <div class="pricing-sub">or $19.99/year — save 44%</div>
+        <ul class="pricing-list">
+          <li>✅ Unlimited trivia</li>
+          <li>✅ Rules — NCAA, NFL, NFHS, Texas HS</li>
+          <li>✅ Terminology &amp; Situations</li>
+          <li>✅ All position knowledge</li>
+          <li>✅ Daily Challenge + streaks</li>
+          <li>✅ XP, levels &amp; leaderboards</li>
+          <li>✅ Game, Flashcard &amp; FBhoot modes</li>
+        </ul>
+        <a href="https://fbiq.app" class="pricing-btn">Get Full Access →</a>
+      </div>
+
+      <div class="pricing-card">
+        <div class="pricing-name">FBIQ Pro</div>
+        <div class="pricing-price">$999 <span>/year</span></div>
+        <div class="pricing-sub">Site license — entire organization</div>
+        <ul class="pricing-list">
+          <li>✅ Everything in Full Access</li>
+          <li>✅ Team admin dashboard</li>
+          <li>✅ FBhoot live classroom</li>
+          <li>✅ Test mode &amp; player analytics</li>
+          <li>✅ Custom team branding</li>
+          <li>✅ Unlimited players &amp; coaches</li>
+        </ul>
+        <a href="mailto:coachbobbyv@gmail.com?subject=FBIQ Pro Inquiry" class="pricing-btn outline">Contact Us →</a>
+      </div>
+
+    </div>
+  </section>
+
+  <hr class="divider">
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-logo"><span class="vyzn">Vyzn</span><span class="iq">IQ</span></div>
+    <div class="footer-tagline">See the Game &nbsp;|&nbsp; Know the Game &nbsp;|&nbsp; Win the Game</div>
+    <div class="footer-links">
+      <a href="https://fbiq.app">FBIQ App</a>
+      <a href="#pricing">Pricing</a>
+      <a href="mailto:coachbobbyv@gmail.com">Contact</a>
+    </div>
+    <div class="footer-copy">© 2026 VyznIQ. All rights reserved.</div>
+  </footer>
+
+</body>
+</html>
