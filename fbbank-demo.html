@@ -1,0 +1,870 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>FBBank Live Demo — FBIQ Pro</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html,body{background:#000;color:#fff;font-family:'Archivo',-apple-system,sans-serif;min-height:100vh;}
+  ::selection{background:#F52C05;color:#fff;}
+  @keyframes fbPulse{0%,100%{opacity:.4;}50%{opacity:1;}}
+  button{font-family:'Archivo';cursor:pointer;}
+  textarea,input{font-family:'Archivo';}
+  textarea:focus,input:focus{outline:none;}
+</style>
+</head>
+<body>
+<div id="app" style="padding:48px 24px 80px;"></div>
+
+<script>
+// ─── Constants ───────────────────────────────────────────────────────────────
+const WORKER = 'https://fbiq-ai.coachbobbyv.workers.dev/fbcat-generate';
+const FBHOOT_COLORS = ['#F52C05','#FFA602','#26890C','#1368CE'];
+const FBHOOT_SHAPES = ['triangle','diamond','circle','square'];
+const FBHOOT_DURATION_MS = 12000;
+const FBHOOT_JOIN_NAMES = ['DeShawn22','CoachMikeV','SafetyQueen','BigUnit74','FastTwitch','ZoneReader','BlitzKing','RedZoneRy','Linebacker7','OptionQB','TrenchWarrior','SpeedDemon10','CoverCorner','Pick6Pete','SundayScout','GridironGia','FourthDown','HashMarkHank','AuditWR','PlaybookPro','SlotMachine','EdgeRusher9','ChainGangJ','TwoMinuteTay','NickelPkg'];
+const BATCH_SIZE = 8;
+const MAX_SOURCE_CHARS = 30000;
+
+const SAMPLE_TEXT = "Cover 3 zone defense. Free safety rotates to the deep middle third. Both cornerbacks play outside leverage and carry any vertical route into the deep thirds, then sink underneath comebacks. The Sam and Will linebackers wall off the flat/curl areas on any 3-step or 5-step drop. The Mike linebacker reads the near back — if the back releases to the flat, Mike carries him man-to-man; if the back blocks, Mike drops to the middle hook zone. The nickel corner has flat responsibility versus trips formations and must not get beat over the top on a wheel route.";
+
+// ─── State ───────────────────────────────────────────────────────────────────
+let state = {
+  phase: 'setup',
+  text: '',
+  category: 'Scheme',
+  customCategory: '',
+  side: 'Defense',
+  count: 10,
+  loading: false,
+  extracting: false,
+  dragActive: false,
+  pdfName: '',
+  error: '',
+  bank: null,
+  partialNote: '',
+  genDone: 0,
+  genTotal: 0,
+
+  learnIndex: 0,
+  learnFlipped: false,
+
+  quizLength: 0,
+  quizIndex: 0,
+  quizSelected: null,
+  quizAnswered: false,
+  quizScore: 0,
+
+  gameIndex: 0,
+  gameSelected: null,
+  gameAnswered: false,
+  gameScore: 0,
+  gameStreak: 0,
+  gameBestStreak: 0,
+
+  testLength: 0,
+  testIndex: 0,
+  testAnswers: [],
+
+  fbhootIndex: 0,
+  fbhootSelected: null,
+  fbhootAnswered: false,
+  fbhootScore: 0,
+  fbhootTimeLeftMs: FBHOOT_DURATION_MS,
+
+  fbhootRoomCode: '',
+  fbhootLobbyCount: 0,
+  fbhootLobbyTarget: 0,
+  fbhootRecentJoins: [],
+};
+
+let fbhootTimerId = null;
+let fbhootLobbyTimerId = null;
+let fbhootJoinSeq = 0;
+
+function setState(patch) {
+  if (typeof patch === 'function') patch = patch(state);
+  if (!patch) return;
+  state = Object.assign({}, state, patch);
+  render();
+}
+
+// ─── AI Call ─────────────────────────────────────────────────────────────────
+async function callWorker(prompt) {
+  const resp = await fetch(WORKER, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ prompt, count: BATCH_SIZE })
+  });
+  if (!resp.ok) throw new Error('Worker error ' + resp.status);
+  const data = await resp.json();
+  return data.result || data.text || data.content || '';
+}
+
+// ─── Helpers ─────────────────────────────────────────────────────────────────
+function salvageJsonArray(str) {
+  try { const p = JSON.parse(str); if (Array.isArray(p)) return p; } catch(e){}
+  for (let i = str.length - 1; i >= 0; i--) {
+    if (str[i] === '}') {
+      try {
+        const parsed = JSON.parse(str.slice(0, i + 1) + ']');
+        if (Array.isArray(parsed) && parsed.length) return parsed;
+      } catch(e){}
+    }
+  }
+  return null;
+}
+
+function segBtn(active) {
+  return `padding:9px 16px;border-radius:8px;font-family:'Archivo';font-weight:700;font-size:13px;cursor:pointer;border:2px solid ${active ? '#F52C05' : 'rgba(255,255,255,0.14)'};background:${active ? 'rgba(245,44,5,0.13)' : 'transparent'};color:${active ? '#F52C05' : '#fff'};`;
+}
+
+function shapeSvgBg(shape, color) {
+  const enc = (s) => 'data:image/svg+xml;utf8,' + encodeURIComponent(s);
+  if (shape === 'triangle') return enc(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><polygon points="12,3 22,20 2,20" fill="${color}"/></svg>`);
+  if (shape === 'diamond')  return enc(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><polygon points="12,2 22,12 12,22 2,12" fill="${color}"/></svg>`);
+  if (shape === 'circle')   return enc(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="${color}"/></svg>`);
+  return enc(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" fill="${color}"/></svg>`);
+}
+
+function buildOptionRows(q, selectedIdx, answered) {
+  const letters = ['A','B','C','D'];
+  return q.options.map((text, i) => {
+    const isCorrect = i === q.correctIndex;
+    const isSelected = i === selectedIdx;
+    let border = 'rgba(255,255,255,0.14)', bg = '#101010';
+    if (answered) {
+      if (isCorrect) { border = '#39FF14'; bg = 'rgba(57,255,20,0.08)'; }
+      else if (isSelected) { border = '#F52C05'; bg = 'rgba(245,44,5,0.1)'; }
+    }
+    const letterBg = answered && isCorrect ? '#39FF14' : answered && isSelected ? '#F52C05' : 'rgba(255,255,255,0.12)';
+    const letterColor = answered && (isCorrect || isSelected) ? '#000' : '#fff';
+    return `<button data-pick="${i}" style="display:flex;align-items:center;gap:12px;padding:14px 16px;border-radius:10px;border:2px solid ${border};background:${bg};color:#fff;font-size:15px;text-align:left;cursor:${answered ? 'default' : 'pointer'};width:100%;"><span style="width:26px;height:26px;flex-shrink:0;border-radius:6px;background:${letterBg};color:${letterColor};font-weight:800;font-size:12px;display:flex;align-items:center;justify-content:center;">${letters[i]}</span><span style="flex:1;text-align:left;">${esc(text)}</span></button>`;
+  }).join('');
+}
+
+function buildNeutralOptionRows(q) {
+  const letters = ['A','B','C','D'];
+  return q.options.map((text, i) =>
+    `<button data-pick="${i}" style="display:flex;align-items:center;gap:12px;padding:14px 16px;border-radius:10px;border:2px solid rgba(255,255,255,0.14);background:#101010;color:#fff;font-size:15px;text-align:left;cursor:pointer;width:100%;"><span style="width:26px;height:26px;flex-shrink:0;border-radius:6px;background:rgba(255,255,255,0.12);color:#fff;font-weight:800;font-size:12px;display:flex;align-items:center;justify-content:center;">${letters[i]}</span><span style="flex:1;text-align:left;">${esc(text)}</span></button>`
+  ).join('');
+}
+
+function esc(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function backBtn(label) {
+  return `<button id="btn-back-modes" style="background:transparent;border:1px solid rgba(255,255,255,0.25);color:#fff;font-weight:700;font-size:12px;padding:7px 14px;border-radius:8px;">${label || '← Modes'}</button>`;
+}
+
+// ─── Render ──────────────────────────────────────────────────────────────────
+function render() {
+  const s = state;
+  const app = document.getElementById('app');
+  let html = `<div style="max-width:920px;margin:0 auto;">
+    <div style="text-align:center;margin-bottom:32px;">
+      <div style="font-size:12px;font-weight:800;letter-spacing:3px;color:#F52C05;text-transform:uppercase;margin-bottom:10px;">FBIQ Pro · Live Demo</div>
+      <h1 style="font-family:'Anton';font-weight:400;font-size:clamp(2rem,5vw,3rem);text-transform:uppercase;letter-spacing:0.5px;margin:0 0 10px;"><span style="color:#F52C05;">FB</span>Bank — Deposit Knowledge. Players Draw From It.</h1>
+      <p style="font-size:15px;color:rgba(255,255,255,0.55);max-width:640px;margin:0 auto;">Drag in any playbook, install sheet, or scouting report. FBBank scrapes it and deposits it into a real question bank — then players draw from it through Learn, Quiz, Game, Test, or FBhoot, just like the built-in content.</p>
+    </div>`;
+
+  if (s.phase === 'setup') html += renderSetup(s);
+  else if (s.phase === 'mode-select') html += renderModeSelect(s);
+  else if (s.phase === 'learn') html += renderLearn(s);
+  else if (s.phase === 'quiz-pick') html += renderQuizPick(s);
+  else if (s.phase === 'quiz-running') html += renderQuizRunning(s);
+  else if (s.phase === 'quiz-done') html += renderQuizDone(s);
+  else if (s.phase === 'game-running') html += renderGameRunning(s);
+  else if (s.phase === 'game-done') html += renderGameDone(s);
+  else if (s.phase === 'test-pick') html += renderTestPick(s);
+  else if (s.phase === 'test-running') html += renderTestRunning(s);
+  else if (s.phase === 'test-done') html += renderTestDone(s);
+  else if (s.phase === 'fbhoot-lobby') html += renderFbhootLobby(s);
+  else if (s.phase === 'fbhoot-running') html += renderFbhootRunning(s);
+  else if (s.phase === 'fbhoot-done') html += renderFbhootDone(s);
+
+  html += '</div>';
+  app.innerHTML = html;
+  attachEvents(s);
+  // restore textarea value (innerHTML doesn't preserve it)
+  const ta = document.getElementById('main-textarea');
+  if (ta) ta.value = s.text;
+  const fi = document.getElementById('file-input');
+  if (fi) fi.value = '';
+}
+
+// ─── Phase renderers ─────────────────────────────────────────────────────────
+function renderSetup(s) {
+  const disabled = s.loading || s.extracting;
+  const dzBorder = s.dragActive ? '#39FF14' : 'rgba(255,255,255,0.22)';
+  const dzBg = s.dragActive ? 'rgba(57,255,20,0.06)' : 'rgba(255,255,255,0.02)';
+  let dzTitle = 'Drag a PDF here — playbook, install sheet, or scouting report';
+  let dzSub = 'or click to browse · FBBank scrapes it automatically';
+  if (s.extracting) { dzTitle = 'Scraping ' + (s.pdfName || 'PDF') + '…'; dzSub = 'Reading every page and pulling out the text'; }
+  else if (s.pdfName) { dzTitle = 'Loaded: ' + esc(s.pdfName); dzSub = 'Drop another PDF to replace it'; }
+
+  const countOpts = [10,20,30,40,50,60,70,80,90,100].map(n =>
+    `<button data-count="${n}" style="${segBtn(s.count===n)}">${n}</button>`).join('');
+
+  const btnLabel = s.loading ? 'Depositing…' : s.extracting ? 'Scraping…' : 'Deposit Into FBBank';
+  const btnBg = disabled ? 'rgba(245,44,5,0.4)' : '#F52C05';
+  const truncNote = (s.text||'').length > MAX_SOURCE_CHARS
+    ? `<div style="font-size:12px;color:rgba(255,255,255,0.4);margin-bottom:16px;">Your document is ${(s.text||'').length.toLocaleString()} characters — FBBank will deposit from the first ${MAX_SOURCE_CHARS.toLocaleString()} characters.</div>` : '';
+
+  let out = `<div style="background:linear-gradient(180deg,#181818,#0d0d0d);border:1px solid rgba(255,255,255,0.1);border-radius:20px;padding:28px;margin-bottom:28px;">
+    <input type="file" id="file-input" accept="application/pdf" style="display:none;">
+    <div id="dropzone" style="border:2.5px dashed ${dzBorder};background:${dzBg};border-radius:16px;padding:30px 20px;text-align:center;cursor:pointer;transition:border-color .15s,background .15s;">
+      <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#F52C05" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom:12px;"><path d="M12 3v12"/><path d="M7 8l5-5 5 5"/><rect x="4" y="16" width="16" height="5" rx="1.5"/></svg>
+      <div style="font-size:16px;font-weight:800;color:#fff;margin-bottom:6px;">${dzTitle}</div>
+      <div style="font-size:13px;color:rgba(255,255,255,0.5);">${dzSub}</div>
+    </div>
+    <div style="display:flex;align-items:center;gap:14px;margin:20px 0;">
+      <div style="flex:1;height:1px;background:rgba(255,255,255,0.1);"></div>
+      <div style="font-size:11px;font-weight:800;letter-spacing:1.5px;color:rgba(255,255,255,0.35);text-transform:uppercase;">or paste text directly</div>
+      <div style="flex:1;height:1px;background:rgba(255,255,255,0.1);"></div>
+    </div>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+      <div style="font-size:12px;font-weight:800;letter-spacing:2px;color:rgba(255,255,255,0.5);text-transform:uppercase;">Playbook / scheme / scouting notes to deposit</div>
+      <button id="btn-load-sample" style="background:transparent;border:1px solid rgba(255,255,255,0.25);color:#fff;font-weight:700;font-size:12px;padding:7px 14px;border-radius:8px;">Load Sample Scheme</button>
+    </div>
+    <textarea id="main-textarea" placeholder="e.g. Cover 3 zone defense — free safety rotates to the deep middle third, corners play outside leverage..." style="width:100%;min-height:100px;background:#101010;border:2px solid rgba(255,255,255,0.14);color:#fff;font-size:14px;line-height:1.5;padding:14px 16px;border-radius:12px;resize:vertical;margin-bottom:22px;" onfocus="this.style.borderColor='#39FF14'" onblur="this.style.borderColor='rgba(255,255,255,0.14)'"></textarea>
+    <div style="margin-bottom:20px;">
+      <div style="font-size:11px;font-weight:800;letter-spacing:1.5px;color:rgba(255,255,255,0.45);text-transform:uppercase;margin-bottom:8px;">Category</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        ${['Game Plan','Scheme','Scout','Terminology','Drills','Other'].map(c=>`<button data-cat="${c}" style="${segBtn(s.category===c)}">${c}</button>`).join('')}
+      </div>
+      ${s.category==='Other' ? `<input id="custom-cat" value="${esc(s.customCategory)}" placeholder="Name your own category…" style="margin-top:10px;width:100%;background:#101010;border:2px solid rgba(255,255,255,0.14);color:#fff;font-size:14px;padding:11px 14px;border-radius:10px;">` : ''}
+    </div>
+    <div style="display:flex;flex-wrap:wrap;gap:24px;margin-bottom:24px;">
+      <div>
+        <div style="font-size:11px;font-weight:800;letter-spacing:1.5px;color:rgba(255,255,255,0.45);text-transform:uppercase;margin-bottom:8px;">Side</div>
+        <div style="display:flex;gap:8px;">
+          ${['Offense','Defense','N/A'].map(sd=>`<button data-side="${sd}" style="${segBtn(s.side===sd)}">${sd}</button>`).join('')}
+        </div>
+      </div>
+      <div style="flex:1;min-width:260px;">
+        <div style="font-size:11px;font-weight:800;letter-spacing:1.5px;color:rgba(255,255,255,0.45);text-transform:uppercase;margin-bottom:8px;">Questions in the Bank</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">${countOpts}</div>
+      </div>
+    </div>
+    ${truncNote}
+    <button id="btn-generate" ${disabled?'disabled':''} style="width:100%;background:${btnBg};color:#fff;border:none;font-weight:800;font-size:15px;padding:15px;border-radius:12px;cursor:${disabled?'default':'pointer'};box-shadow:0 10px 30px rgba(245,44,5,0.28);">${btnLabel}</button>
+  </div>`;
+
+  if (s.loading || s.extracting) {
+    const label = s.extracting ? 'Scraping your PDF…'
+      : s.genDone > 0 ? `FBBank has deposited ${s.genDone} of ${s.genTotal} questions…`
+      : 'FBBank is analyzing your document and building the question bank…';
+    out += `<div style="text-align:center;padding:40px 20px;"><div style="display:inline-block;font-size:15px;font-weight:700;color:#39FF14;animation:fbPulse 1.2s ease-in-out infinite;">${esc(label)}</div></div>`;
+  }
+
+  if (s.error) {
+    out += `<div style="text-align:center;padding:20px;background:rgba(245,44,5,0.08);border:1px solid rgba(245,44,5,0.4);border-radius:12px;color:#ff6a47;font-weight:600;font-size:14px;">${esc(s.error)}</div>`;
+  }
+
+  return out;
+}
+
+function renderModeSelect(s) {
+  const effCat = s.category === 'Other' ? (s.customCategory.trim() || 'Custom') : s.category;
+  const bankLabel = effCat + (s.side !== 'N/A' ? ' · ' + s.side : '');
+  let out = `
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:22px;">
+      <div style="font-size:13px;font-weight:800;letter-spacing:1.5px;color:#39FF14;text-transform:uppercase;">✓ ${s.bank.length} Questions Deposited — ${esc(bankLabel)}</div>
+      <button id="btn-start-over" style="background:transparent;border:1px solid rgba(255,255,255,0.25);color:#fff;font-weight:700;font-size:12px;padding:7px 14px;border-radius:8px;">Start Over</button>
+    </div>
+    <div style="font-size:13px;color:rgba(255,255,255,0.5);margin-bottom:22px;">Pick how you want to draw from the bank — same content, five different modes.</div>`;
+
+  if (s.partialNote) {
+    out += `<div style="background:rgba(245,197,66,0.08);border:1px solid rgba(245,197,66,0.4);color:#F5C542;font-size:13px;padding:12px 16px;border-radius:10px;margin-bottom:20px;">${esc(s.partialNote)}</div>`;
+  }
+
+  out += `<div style="display:grid;grid-template-columns:repeat(2,1fr);gap:18px;margin-bottom:18px;">
+    <div id="btn-select-learn" style="background:#0d0d0d;border:1px solid rgba(255,255,255,0.1);border-top:3px solid #F52C05;border-radius:16px;padding:26px;cursor:pointer;">
+      <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#F52C05" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom:14px;"><rect x="3" y="5" width="14" height="16" rx="2"/><rect x="7" y="2" width="14" height="16" rx="2" fill="#0d0d0d"/></svg>
+      <div style="font-family:'Anton';font-size:24px;text-transform:uppercase;margin-bottom:6px;">Learn Mode</div>
+      <div style="font-size:14px;line-height:1.5;color:rgba(255,255,255,0.55);">Flashcard style. Tap a card to flip it and reveal the answer plus a full explanation.</div>
+    </div>
+    <div id="btn-select-quiz" style="background:#0d0d0d;border:1px solid rgba(255,255,255,0.1);border-top:3px solid #F52C05;border-radius:16px;padding:26px;cursor:pointer;">
+      <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#F52C05" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom:14px;"><circle cx="12" cy="12" r="9"/><polyline points="8 12.5 11 15.5 16 9"/></svg>
+      <div style="font-family:'Anton';font-size:24px;text-transform:uppercase;margin-bottom:6px;">Quiz Mode</div>
+      <div style="font-size:14px;line-height:1.5;color:rgba(255,255,255,0.55);">Pick how many questions to cover, then work through them one at a time with instant feedback.</div>
+    </div>
+    <div id="btn-select-game" style="background:#0d0d0d;border:1px solid rgba(255,255,255,0.1);border-top:3px solid #F52C05;border-radius:16px;padding:26px;cursor:pointer;">
+      <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#F52C05" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom:14px;"><polygon points="2 5 2 19 11 12"/><polygon points="22 5 22 19 13 12"/></svg>
+      <div style="font-family:'Anton';font-size:24px;text-transform:uppercase;margin-bottom:6px;">Game Mode</div>
+      <div style="font-size:14px;line-height:1.5;color:rgba(255,255,255,0.55);">Auto-built 4-choice arcade run through the whole database — chase your score and streak.</div>
+    </div>
+    <div id="btn-select-test" style="background:#0d0d0d;border:1px solid rgba(255,255,255,0.1);border-top:3px solid #F52C05;border-radius:16px;padding:26px;cursor:pointer;">
+      <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#F52C05" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom:14px;"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8"/><path d="M8 12h5"/><path d="M8 16l2 2 4-4"/></svg>
+      <div style="font-family:'Anton';font-size:24px;text-transform:uppercase;margin-bottom:6px;">Test Mode</div>
+      <div style="font-size:14px;line-height:1.5;color:rgba(255,255,255,0.55);">Pick a length, answer every question with no hints — see your graded score at the end.</div>
+    </div>
+  </div>
+  <div id="btn-select-fbhoot" style="background:linear-gradient(180deg,#181818,#0d0d0d);border:3px solid #39FF14;border-radius:16px;padding:26px;cursor:pointer;box-shadow:0 0 26px rgba(57,255,20,0.28);">
+    <svg width="30" height="30" viewBox="0 0 24 24" fill="#F52C05" stroke="none" style="margin-bottom:14px;"><polygon points="13 2 4 14 11 14 10 22 19 9 12 9 13 2"/></svg>
+    <div style="font-family:'Anton';font-size:24px;text-transform:uppercase;margin-bottom:6px;"><span style="color:#F52C05;">FB</span>hoot</div>
+    <div style="font-size:14px;line-height:1.5;color:rgba(255,255,255,0.55);">Kahoot-style, timed, colored answer tiles. Faster correct answers score more points.</div>
+  </div>`;
+  return out;
+}
+
+function renderLearn(s) {
+  const q = s.bank[s.learnIndex];
+  const border = s.learnFlipped ? '#39FF14' : 'rgba(245,44,5,0.5)';
+  const prevDis = s.learnIndex === 0;
+  const nextDis = s.learnIndex === s.bank.length - 1;
+  const navBtn = (dis) => `flex:1;padding:13px;border-radius:10px;font-weight:700;font-size:14px;border:1px solid rgba(255,255,255,0.2);background:transparent;color:#fff;cursor:${dis?'default':'pointer'};opacity:${dis?0.35:1};`;
+
+  let cardInner = s.learnFlipped
+    ? `<div style="font-size:11px;font-weight:800;letter-spacing:2px;color:#39FF14;text-transform:uppercase;margin-bottom:14px;">Answer</div>
+       <div style="font-size:22px;font-weight:800;color:#fff;margin-bottom:18px;line-height:1.4;">${esc(q.options[q.correctIndex])}</div>
+       <div style="font-size:11px;font-weight:800;letter-spacing:2px;color:rgba(255,255,255,0.45);text-transform:uppercase;margin-bottom:10px;">Why</div>
+       <div style="font-size:16px;line-height:1.6;color:rgba(255,255,255,0.75);">${esc(q.explanation)}</div>`
+    : `<div style="font-size:11px;font-weight:800;letter-spacing:2px;color:#F52C05;text-transform:uppercase;margin-bottom:16px;">Question</div>
+       <div style="font-size:24px;font-weight:700;line-height:1.45;color:#fff;">${esc(q.question)}</div>
+       <div style="margin-top:26px;font-size:13px;color:rgba(255,255,255,0.4);">Tap the card to reveal the answer</div>`;
+
+  return `
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+      <div style="font-size:13px;font-weight:800;letter-spacing:1.5px;color:rgba(255,255,255,0.5);text-transform:uppercase;">Learn Mode · Card ${s.learnIndex+1} of ${s.bank.length}</div>
+      ${backBtn()}
+    </div>
+    <div id="btn-flip" style="min-height:280px;background:linear-gradient(180deg,#181818,#0d0d0d);border:3px solid ${border};border-radius:20px;padding:40px;display:flex;flex-direction:column;justify-content:center;cursor:pointer;box-shadow:0 0 26px rgba(57,255,20,0.2);">
+      ${cardInner}
+    </div>
+    <div style="display:flex;justify-content:space-between;gap:12px;margin-top:20px;">
+      <button id="btn-learn-prev" ${prevDis?'disabled':''} style="${navBtn(prevDis)}">← Previous</button>
+      <button id="btn-learn-next" ${nextDis?'disabled':''} style="${navBtn(nextDis)}">Next →</button>
+    </div>`;
+}
+
+function renderQuizPick(s) {
+  const candidates = Array.from(new Set([5,10,s.bank.length])).filter(n=>n<=s.bank.length).sort((a,b)=>a-b);
+  return `
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+      <div style="font-size:13px;font-weight:800;letter-spacing:1.5px;color:rgba(255,255,255,0.5);text-transform:uppercase;">Quiz Mode</div>
+      ${backBtn()}
+    </div>
+    <div style="background:#0d0d0d;border:1px solid rgba(255,255,255,0.1);border-radius:16px;padding:32px;text-align:center;">
+      <div style="font-size:18px;font-weight:700;margin-bottom:20px;">How many questions do you want to quiz on?</div>
+      <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
+        ${candidates.map(n=>`<button data-quiz-len="${n}" style="background:#F52C05;color:#fff;border:none;font-weight:800;font-size:15px;padding:14px 26px;border-radius:12px;">${n===s.bank.length?`All (${n})`:n}</button>`).join('')}
+      </div>
+    </div>`;
+}
+
+function renderQuizRunning(s) {
+  const q = s.bank[s.quizIndex];
+  return `
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+      <div style="font-size:13px;font-weight:800;letter-spacing:1.5px;color:rgba(255,255,255,0.5);text-transform:uppercase;">Quiz · Question ${s.quizIndex+1} of ${s.quizLength} · Score ${s.quizScore}</div>
+      ${backBtn()}
+    </div>
+    <div style="background:#0d0d0d;border:1px solid rgba(255,255,255,0.1);border-radius:16px;padding:30px;">
+      <div style="font-size:20px;font-weight:700;line-height:1.5;color:#fff;margin-bottom:22px;">${esc(q.question)}</div>
+      <div id="quiz-options" style="display:flex;flex-direction:column;gap:10px;margin-bottom:20px;">${buildOptionRows(q,s.quizSelected,s.quizAnswered)}</div>
+      ${s.quizAnswered ? `
+        <div style="background:rgba(255,255,255,0.05);border-radius:12px;padding:16px 18px;margin-bottom:16px;">
+          <div style="font-size:12px;font-weight:800;letter-spacing:1.5px;color:rgba(255,255,255,0.45);text-transform:uppercase;margin-bottom:8px;">Why</div>
+          <div style="font-size:14px;line-height:1.55;color:rgba(255,255,255,0.75);">${esc(q.explanation)}</div>
+        </div>
+        <button id="btn-quiz-next" style="width:100%;background:#F52C05;color:#fff;border:none;font-weight:800;font-size:15px;padding:14px;border-radius:12px;">${s.quizIndex+1>=s.quizLength?'See Results':'Next Question →'}</button>
+      ` : ''}
+    </div>`;
+}
+
+function renderQuizDone(s) {
+  return `
+    <div style="text-align:center;background:linear-gradient(180deg,#181818,#0d0d0d);border:3px solid #39FF14;border-radius:20px;padding:48px 30px;box-shadow:0 0 26px rgba(57,255,20,0.28);">
+      <div style="font-size:13px;font-weight:800;letter-spacing:2px;color:#39FF14;text-transform:uppercase;margin-bottom:14px;">Quiz Complete</div>
+      <div style="font-family:'Anton';font-size:64px;color:#fff;margin-bottom:10px;">${s.quizScore} / ${s.quizLength}</div>
+      <div style="display:flex;gap:12px;justify-content:center;margin-top:26px;">
+        <button id="btn-quiz-retry" style="background:#F52C05;color:#fff;border:none;font-weight:800;font-size:14px;padding:13px 24px;border-radius:12px;">Quiz Again</button>
+        <button id="btn-back-modes" style="background:transparent;border:1px solid rgba(255,255,255,0.3);color:#fff;font-weight:800;font-size:14px;padding:13px 24px;border-radius:12px;">Back to Modes</button>
+      </div>
+    </div>`;
+}
+
+function renderGameRunning(s) {
+  const q = s.bank[s.gameIndex];
+  return `
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+      <div style="font-size:13px;font-weight:800;letter-spacing:1.5px;color:rgba(255,255,255,0.5);text-transform:uppercase;">Game · ${s.gameIndex+1} / ${s.bank.length} · Score ${s.gameScore} · Streak ${s.gameStreak}</div>
+      ${backBtn()}
+    </div>
+    <div style="background:linear-gradient(180deg,#181818,#0d0d0d);border:2px solid rgba(255,255,255,0.12);border-radius:16px;padding:30px;">
+      <div style="font-size:22px;font-weight:800;line-height:1.5;color:#fff;margin-bottom:24px;">${esc(q.question)}</div>
+      <div id="game-options" style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">${buildOptionRows(q,s.gameSelected,s.gameAnswered)}</div>
+      ${s.gameAnswered ? `<button id="btn-game-next" style="margin-top:22px;width:100%;background:#F52C05;color:#fff;border:none;font-weight:800;font-size:15px;padding:14px;border-radius:12px;">${s.gameIndex+1>=s.bank.length?'See Final Score':'Next →'}</button>` : ''}
+    </div>`;
+}
+
+function renderGameDone(s) {
+  return `
+    <div style="text-align:center;background:linear-gradient(180deg,#181818,#0d0d0d);border:3px solid #39FF14;border-radius:20px;padding:48px 30px;box-shadow:0 0 26px rgba(57,255,20,0.28);">
+      <div style="font-size:13px;font-weight:800;letter-spacing:2px;color:#39FF14;text-transform:uppercase;margin-bottom:14px;">Game Over</div>
+      <div style="font-family:'Anton';font-size:64px;color:#fff;margin-bottom:6px;">${s.gameScore} / ${s.bank.length}</div>
+      <div style="font-size:15px;color:rgba(255,255,255,0.55);margin-bottom:26px;">Best Streak: ${s.gameBestStreak}</div>
+      <div style="display:flex;gap:12px;justify-content:center;">
+        <button id="btn-game-retry" style="background:#F52C05;color:#fff;border:none;font-weight:800;font-size:14px;padding:13px 24px;border-radius:12px;">Play Again</button>
+        <button id="btn-back-modes" style="background:transparent;border:1px solid rgba(255,255,255,0.3);color:#fff;font-weight:800;font-size:14px;padding:13px 24px;border-radius:12px;">Back to Modes</button>
+      </div>
+    </div>`;
+}
+
+function renderTestPick(s) {
+  const candidates = Array.from(new Set([5,10,s.bank.length])).filter(n=>n<=s.bank.length).sort((a,b)=>a-b);
+  return `
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+      <div style="font-size:13px;font-weight:800;letter-spacing:1.5px;color:rgba(255,255,255,0.5);text-transform:uppercase;">Test Mode</div>
+      ${backBtn()}
+    </div>
+    <div style="background:#0d0d0d;border:1px solid rgba(255,255,255,0.1);border-radius:16px;padding:32px;text-align:center;">
+      <div style="font-size:18px;font-weight:700;margin-bottom:10px;">How many questions is the test?</div>
+      <div style="font-size:13px;color:rgba(255,255,255,0.5);margin-bottom:20px;">No hints along the way — you'll see your graded score and the full review at the end.</div>
+      <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
+        ${candidates.map(n=>`<button data-test-len="${n}" style="background:#F52C05;color:#fff;border:none;font-weight:800;font-size:15px;padding:14px 26px;border-radius:12px;">${n===s.bank.length?`All (${n})`:n}</button>`).join('')}
+      </div>
+    </div>`;
+}
+
+function renderTestRunning(s) {
+  const q = s.bank[s.testIndex];
+  const pct = (s.testIndex / s.testLength) * 100;
+  return `
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+      <div style="font-size:13px;font-weight:800;letter-spacing:1.5px;color:rgba(255,255,255,0.5);text-transform:uppercase;">Test · Question ${s.testIndex+1} of ${s.testLength}</div>
+      ${backBtn()}
+    </div>
+    <div style="height:6px;background:rgba(255,255,255,0.1);border-radius:3px;overflow:hidden;margin-bottom:20px;">
+      <div style="height:100%;width:${pct}%;background:#F52C05;transition:width .2s ease;"></div>
+    </div>
+    <div style="background:#0d0d0d;border:1px solid rgba(255,255,255,0.1);border-radius:16px;padding:30px;">
+      <div style="font-size:20px;font-weight:700;line-height:1.5;color:#fff;margin-bottom:22px;">${esc(q.question)}</div>
+      <div id="test-options" style="display:flex;flex-direction:column;gap:10px;">${buildNeutralOptionRows(q)}</div>
+    </div>`;
+}
+
+function renderTestDone(s) {
+  let score = 0;
+  const review = s.bank.slice(0, s.testLength).map((q, i) => {
+    const ans = s.testAnswers[i];
+    const correct = ans === q.correctIndex;
+    if (correct) score++;
+    return { q, ans, correct };
+  });
+  const reviewHtml = review.map(({q,ans,correct}) => `
+    <div style="background:#0d0d0d;border:1px solid rgba(255,255,255,0.1);border-left:4px solid ${correct?'#39FF14':'#F52C05'};border-radius:12px;padding:18px 20px;">
+      <div style="display:flex;justify-content:space-between;gap:12px;margin-bottom:8px;">
+        <div style="font-size:15px;font-weight:700;color:#fff;">${esc(q.question)}</div>
+        <div style="flex-shrink:0;font-size:12px;font-weight:800;color:${correct?'#39FF14':'#F52C05'};text-transform:uppercase;">${correct?'Correct':'Incorrect'}</div>
+      </div>
+      <div style="font-size:13px;color:rgba(255,255,255,0.6);margin-bottom:4px;">Your answer: ${esc((ans===undefined||ans===null)?'(no answer)':q.options[ans])}</div>
+      ${!correct?`<div style="font-size:13px;color:#39FF14;margin-bottom:8px;">Correct answer: ${esc(q.options[q.correctIndex])}</div>`:''}
+      <div style="font-size:13px;line-height:1.5;color:rgba(255,255,255,0.5);">${esc(q.explanation)}</div>
+    </div>`).join('');
+
+  return `
+    <div style="text-align:center;background:linear-gradient(180deg,#181818,#0d0d0d);border:3px solid #39FF14;border-radius:20px;padding:48px 30px;box-shadow:0 0 26px rgba(57,255,20,0.28);margin-bottom:22px;">
+      <div style="font-size:13px;font-weight:800;letter-spacing:2px;color:#39FF14;text-transform:uppercase;margin-bottom:14px;">Test Complete</div>
+      <div style="font-family:'Anton';font-size:64px;color:#fff;margin-bottom:10px;">${score} / ${s.testLength}</div>
+      <div style="display:flex;gap:12px;justify-content:center;margin-top:26px;">
+        <button id="btn-test-retry" style="background:#F52C05;color:#fff;border:none;font-weight:800;font-size:14px;padding:13px 24px;border-radius:12px;">Retake Test</button>
+        <button id="btn-back-modes" style="background:transparent;border:1px solid rgba(255,255,255,0.3);color:#fff;font-weight:800;font-size:14px;padding:13px 24px;border-radius:12px;">Back to Modes</button>
+      </div>
+    </div>
+    <div style="font-size:12px;font-weight:800;letter-spacing:1.5px;color:rgba(255,255,255,0.45);text-transform:uppercase;margin-bottom:14px;">Review</div>
+    <div style="display:flex;flex-direction:column;gap:12px;">${reviewHtml}</div>`;
+}
+
+function renderFbhootLobby(s) {
+  const joinPills = s.fbhootRecentJoins.map(p =>
+    `<div style="background:rgba(57,255,20,0.08);border:1px solid rgba(57,255,20,0.4);border-radius:999px;padding:7px 14px;font-size:13px;font-weight:700;color:#fff;">${esc(p.name)}</div>`
+  ).join('');
+
+  return `
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+      <div style="font-size:13px;font-weight:800;letter-spacing:1.5px;color:rgba(255,255,255,0.5);text-transform:uppercase;"><span style="color:#F52C05;">FB</span>hoot Lobby</div>
+      ${backBtn()}
+    </div>
+    <div style="background:#000;border:2px solid rgba(255,255,255,0.14);border-radius:16px;padding:26px;text-align:center;margin-bottom:18px;">
+      <div style="font-size:12px;font-weight:800;letter-spacing:2px;color:rgba(255,255,255,0.45);text-transform:uppercase;margin-bottom:10px;">Join at fbiq.app · Room Code</div>
+      <div style="font-family:'Anton';font-size:64px;letter-spacing:10px;color:#F52C05;line-height:1;">${esc(s.fbhootRoomCode)}</div>
+    </div>
+    <div style="background:linear-gradient(180deg,#181818,#0d0d0d);border:3px solid #39FF14;border-radius:20px;padding:36px 30px;text-align:center;box-shadow:0 0 26px rgba(57,255,20,0.28);margin-bottom:22px;">
+      <div style="font-family:'Anton';font-size:80px;color:#fff;line-height:1;margin-bottom:8px;">${s.fbhootLobbyCount}</div>
+      <div style="font-size:14px;font-weight:800;letter-spacing:2px;color:#39FF14;text-transform:uppercase;">Players Joined</div>
+    </div>
+    <div style="font-size:11px;font-weight:800;letter-spacing:1.5px;color:rgba(255,255,255,0.4);text-transform:uppercase;margin-bottom:12px;">Just Joined</div>
+    <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:26px;min-height:36px;">${joinPills}</div>
+    <button id="btn-fbhoot-start" style="width:100%;background:rgba(57,255,20,0.06);border:2px solid #39FF14;color:#fff;font-weight:800;font-size:16px;padding:16px;border-radius:12px;box-shadow:0 0 22px rgba(57,255,20,0.3);">Start FBhoot Now</button>
+    <div style="text-align:center;font-size:12px;color:rgba(255,255,255,0.4);margin-top:12px;">You control when it starts — anyone still joining just jumps into the leaderboard live.</div>`;
+}
+
+function renderFbhootRunning(s) {
+  const q = s.bank[s.fbhootIndex];
+  const pct = Math.max(0, (s.fbhootTimeLeftMs / FBHOOT_DURATION_MS) * 100);
+  const timerColor = pct < 25 ? '#F52C05' : '#fff';
+  const barColor = pct < 25 ? '#F52C05' : '#39FF14';
+  const timeLabel = Math.ceil(s.fbhootTimeLeftMs / 1000);
+
+  const tiles = q.options.map((text, i) => {
+    const color = FBHOOT_COLORS[i];
+    const shape = FBHOOT_SHAPES[i];
+    const isCorrect = i === q.correctIndex;
+    const isSelected = i === s.fbhootSelected;
+    let opacity = 1;
+    if (s.fbhootAnswered && !isCorrect && !isSelected) opacity = 0.35;
+    const ring = s.fbhootAnswered && isCorrect ? '4px solid #fff' : '4px solid transparent';
+    return `<button data-fbhoot-pick="${i}" style="display:flex;align-items:center;gap:14px;padding:22px;border-radius:14px;background:${color};color:#fff;font-weight:800;font-size:16px;border:${ring};cursor:${s.fbhootAnswered?'default':'pointer'};opacity:${opacity};min-height:64px;">
+      <span style="width:22px;height:22px;flex-shrink:0;background-image:url('${shapeSvgBg(shape,'#fff')}');background-size:contain;background-repeat:no-repeat;display:inline-block;"></span>
+      <span style="flex:1;text-align:left;">${esc(text)}</span>
+    </button>`;
+  }).join('');
+
+  let resultHtml = '';
+  if (s.fbhootAnswered) {
+    const correct = s.fbhootSelected === q.correctIndex && s.fbhootSelected !== null;
+    const label = s.fbhootSelected === null ? "Time's Up!" : correct ? 'Correct!' : 'Incorrect';
+    const color = correct ? '#39FF14' : '#F52C05';
+    const nextLabel = s.fbhootIndex + 1 >= s.bank.length ? 'See Final Score' : 'Next Question →';
+    resultHtml = `<div style="text-align:center;margin-top:18px;">
+      <div style="font-family:'Anton';font-size:28px;color:${color};margin-bottom:14px;text-transform:uppercase;">${label}</div>
+      <button id="btn-fbhoot-next" style="background:#F52C05;color:#fff;border:none;font-weight:800;font-size:15px;padding:14px 30px;border-radius:12px;">${nextLabel}</button>
+    </div>`;
+  }
+
+  return `
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+      <div style="font-size:13px;font-weight:800;letter-spacing:1.5px;color:rgba(255,255,255,0.5);text-transform:uppercase;"><span style="color:#F52C05;">FB</span>hoot · ${s.fbhootIndex+1} / ${s.bank.length} · Score ${s.fbhootScore}</div>
+      ${backBtn()}
+    </div>
+    <div style="height:8px;background:rgba(255,255,255,0.1);border-radius:4px;overflow:hidden;margin-bottom:20px;">
+      <div style="height:100%;width:${pct}%;background:${barColor};transition:width .1s linear;"></div>
+    </div>
+    <div style="text-align:center;font-family:'Anton';font-size:56px;color:${timerColor};line-height:1;margin-bottom:20px;">${timeLabel}</div>
+    <div style="background:#000;border:2px solid rgba(255,255,255,0.12);border-radius:16px;padding:28px;text-align:center;margin-bottom:16px;">
+      <div style="font-size:22px;font-weight:800;color:#fff;line-height:1.4;">${esc(q.question)}</div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">${tiles}</div>
+    ${resultHtml}`;
+}
+
+function renderFbhootDone(s) {
+  return `
+    <div style="text-align:center;background:linear-gradient(180deg,#181818,#0d0d0d);border:3px solid #39FF14;border-radius:20px;padding:48px 30px;box-shadow:0 0 26px rgba(57,255,20,0.28);">
+      <div style="font-size:13px;font-weight:800;letter-spacing:2px;color:#39FF14;text-transform:uppercase;margin-bottom:14px;">Final Score</div>
+      <div style="font-family:'Anton';font-size:64px;color:#fff;margin-bottom:26px;">${s.fbhootScore} <span style="font-size:24px;color:rgba(255,255,255,0.4);">pts</span></div>
+      <div style="display:flex;gap:12px;justify-content:center;">
+        <button id="btn-fbhoot-retry" style="background:#F52C05;color:#fff;border:none;font-weight:800;font-size:14px;padding:13px 24px;border-radius:12px;">Play Again</button>
+        <button id="btn-back-modes" style="background:transparent;border:1px solid rgba(255,255,255,0.3);color:#fff;font-weight:800;font-size:14px;padding:13px 24px;border-radius:12px;">Back to Modes</button>
+      </div>
+    </div>`;
+}
+
+// ─── Event wiring ─────────────────────────────────────────────────────────────
+function attachEvents(s) {
+  // textarea sync
+  const ta = document.getElementById('main-textarea');
+  if (ta) ta.addEventListener('input', e => { state.text = e.target.value; });
+
+  // custom category input
+  const cc = document.getElementById('custom-cat');
+  if (cc) cc.addEventListener('input', e => setState({ customCategory: e.target.value }));
+
+  // file input
+  const fi = document.getElementById('file-input');
+  if (fi) fi.addEventListener('change', e => {
+    const f = e.target.files && e.target.files[0];
+    if (f) handleFile(f);
+    e.target.value = '';
+  });
+
+  // dropzone
+  const dz = document.getElementById('dropzone');
+  if (dz) {
+    dz.addEventListener('click', () => document.getElementById('file-input') && document.getElementById('file-input').click());
+    dz.addEventListener('dragover', e => { e.preventDefault(); if (!state.dragActive) setState({ dragActive: true }); });
+    dz.addEventListener('dragleave', e => { e.preventDefault(); setState({ dragActive: false }); });
+    dz.addEventListener('drop', e => {
+      e.preventDefault();
+      setState({ dragActive: false });
+      const f = e.dataTransfer.files && e.dataTransfer.files[0];
+      if (f) handleFile(f);
+    });
+  }
+
+  // category buttons
+  document.querySelectorAll('[data-cat]').forEach(b => b.addEventListener('click', () => setState({ category: b.dataset.cat })));
+  // side buttons
+  document.querySelectorAll('[data-side]').forEach(b => b.addEventListener('click', () => setState({ side: b.dataset.side })));
+  // count buttons
+  document.querySelectorAll('[data-count]').forEach(b => b.addEventListener('click', () => setState({ count: +b.dataset.count })));
+
+  // load sample
+  const ls = document.getElementById('btn-load-sample');
+  if (ls) ls.addEventListener('click', () => setState({ text: SAMPLE_TEXT, pdfName: '' }));
+
+  // generate
+  const gen = document.getElementById('btn-generate');
+  if (gen) gen.addEventListener('click', () => generate());
+
+  // back to modes / start over
+  const bm = document.getElementById('btn-back-modes');
+  if (bm) bm.addEventListener('click', () => { stopFbhootTimer(); stopFbhootLobby(); setState({ phase: 'mode-select' }); });
+  const so = document.getElementById('btn-start-over');
+  if (so) so.addEventListener('click', () => { stopFbhootTimer(); stopFbhootLobby(); setState({ phase: 'setup', bank: null, error: '', partialNote: '' }); });
+
+  // mode selectors
+  const sm = (id, fn) => { const el = document.getElementById(id); if (el) el.addEventListener('click', fn); };
+  sm('btn-select-learn', () => setState({ phase: 'learn', learnIndex: 0, learnFlipped: false }));
+  sm('btn-select-quiz',  () => setState({ phase: 'quiz-pick' }));
+  sm('btn-select-game',  () => { setState({ phase: 'game-running', gameIndex: 0, gameSelected: null, gameAnswered: false, gameScore: 0, gameStreak: 0, gameBestStreak: 0 }); });
+  sm('btn-select-test',  () => setState({ phase: 'test-pick' }));
+  sm('btn-select-fbhoot',() => selectFbhoot());
+
+  // learn
+  sm('btn-flip',       () => setState(s => ({ learnFlipped: !s.learnFlipped })));
+  sm('btn-learn-prev', () => { if (state.learnIndex > 0) setState(s => ({ learnIndex: s.learnIndex - 1, learnFlipped: false })); });
+  sm('btn-learn-next', () => { if (state.learnIndex < state.bank.length - 1) setState(s => ({ learnIndex: s.learnIndex + 1, learnFlipped: false })); });
+
+  // quiz
+  document.querySelectorAll('[data-quiz-len]').forEach(b => b.addEventListener('click', () =>
+    setState({ phase: 'quiz-running', quizLength: +b.dataset.quizLen, quizIndex: 0, quizSelected: null, quizAnswered: false, quizScore: 0 })));
+  document.querySelectorAll('#quiz-options [data-pick]').forEach(b => b.addEventListener('click', () => {
+    if (state.quizAnswered) return;
+    const idx = +b.dataset.pick;
+    const correct = idx === state.bank[state.quizIndex].correctIndex;
+    setState(s => ({ quizSelected: idx, quizAnswered: true, quizScore: s.quizScore + (correct ? 1 : 0) }));
+  }));
+  sm('btn-quiz-next', () => {
+    if (state.quizIndex + 1 >= state.quizLength) setState({ phase: 'quiz-done' });
+    else setState(s => ({ quizIndex: s.quizIndex + 1, quizSelected: null, quizAnswered: false }));
+  });
+  sm('btn-quiz-retry', () => setState({ phase: 'quiz-pick' }));
+
+  // game
+  document.querySelectorAll('#game-options [data-pick]').forEach(b => b.addEventListener('click', () => {
+    if (state.gameAnswered) return;
+    const idx = +b.dataset.pick;
+    const correct = idx === state.bank[state.gameIndex].correctIndex;
+    setState(s => {
+      const streak = correct ? s.gameStreak + 1 : 0;
+      return { gameSelected: idx, gameAnswered: true, gameScore: s.gameScore + (correct?1:0), gameStreak: streak, gameBestStreak: Math.max(s.gameBestStreak, streak) };
+    });
+  }));
+  sm('btn-game-next', () => {
+    if (state.gameIndex + 1 >= state.bank.length) setState({ phase: 'game-done' });
+    else setState(s => ({ gameIndex: s.gameIndex + 1, gameSelected: null, gameAnswered: false }));
+  });
+  sm('btn-game-retry', () => setState({ phase: 'game-running', gameIndex: 0, gameSelected: null, gameAnswered: false, gameScore: 0, gameStreak: 0, gameBestStreak: 0 }));
+
+  // test
+  document.querySelectorAll('[data-test-len]').forEach(b => b.addEventListener('click', () =>
+    setState({ phase: 'test-running', testLength: +b.dataset.testLen, testIndex: 0, testAnswers: [] })));
+  document.querySelectorAll('#test-options [data-pick]').forEach(b => b.addEventListener('click', () => {
+    const idx = +b.dataset.pick;
+    const nextAnswers = state.testAnswers.slice();
+    nextAnswers[state.testIndex] = idx;
+    if (state.testIndex + 1 >= state.testLength) setState({ testAnswers: nextAnswers, phase: 'test-done' });
+    else setState(s => ({ testAnswers: nextAnswers, testIndex: s.testIndex + 1 }));
+  }));
+  sm('btn-test-retry', () => setState({ phase: 'test-pick' }));
+
+  // fbhoot
+  sm('btn-fbhoot-start', () => startFbhootRound());
+  document.querySelectorAll('[data-fbhoot-pick]').forEach(b => b.addEventListener('click', () => {
+    if (state.fbhootAnswered) return;
+    stopFbhootTimer();
+    const idx = +b.dataset.fbhootPick;
+    const correct = idx === state.bank[state.fbhootIndex].correctIndex;
+    const bonus = correct ? Math.round(500 * (state.fbhootTimeLeftMs / FBHOOT_DURATION_MS) + 500) : 0;
+    setState(s => ({ fbhootSelected: idx, fbhootAnswered: true, fbhootScore: s.fbhootScore + bonus }));
+  }));
+  sm('btn-fbhoot-next', () => {
+    if (state.fbhootIndex + 1 >= state.bank.length) setState({ phase: 'fbhoot-done' });
+    else {
+      setState(s => ({ fbhootIndex: s.fbhootIndex + 1, fbhootSelected: null, fbhootAnswered: false }));
+      startFbhootTimer();
+    }
+  });
+  sm('btn-fbhoot-retry', () => selectFbhoot());
+}
+
+// ─── FBhoot timers ────────────────────────────────────────────────────────────
+function stopFbhootTimer() { if (fbhootTimerId) { clearInterval(fbhootTimerId); fbhootTimerId = null; } }
+function stopFbhootLobby() { if (fbhootLobbyTimerId) { clearInterval(fbhootLobbyTimerId); fbhootLobbyTimerId = null; } }
+
+function startFbhootTimer() {
+  stopFbhootTimer();
+  state = Object.assign({}, state, { fbhootTimeLeftMs: FBHOOT_DURATION_MS });
+  fbhootTimerId = setInterval(() => {
+    const next = state.fbhootTimeLeftMs - 100;
+    if (next <= 0) {
+      stopFbhootTimer();
+      if (!state.fbhootAnswered) setState({ fbhootTimeLeftMs: 0, fbhootAnswered: true, fbhootSelected: null });
+      else setState({ fbhootTimeLeftMs: 0 });
+      return;
+    }
+    state = Object.assign({}, state, { fbhootTimeLeftMs: next });
+    // update just the timer display without full re-render for perf
+    const timerEl = document.querySelector('[style*="font-family:\'Anton\';font-size:56px"]');
+    const barEl = document.querySelector('[style*="width:8px"]');
+    const pct = Math.max(0, (next / FBHOOT_DURATION_MS) * 100);
+    if (timerEl) timerEl.textContent = Math.ceil(next / 1000);
+    if (barEl) {
+      barEl.firstElementChild && (barEl.firstElementChild.style.width = pct + '%');
+    }
+  }, 100);
+}
+
+function selectFbhoot() {
+  stopFbhootTimer();
+  stopFbhootLobby();
+  const roomCode = String(Math.floor(100000 + Math.random() * 900000));
+  const target = Math.floor(Math.random() * 150) + 250;
+  fbhootJoinSeq = 0;
+  setState({ phase: 'fbhoot-lobby', fbhootRoomCode: roomCode, fbhootLobbyCount: 0, fbhootLobbyTarget: target, fbhootRecentJoins: [] });
+  fbhootLobbyTimerId = setInterval(() => {
+    if (state.fbhootLobbyCount >= state.fbhootLobbyTarget) { stopFbhootLobby(); return; }
+    const batch = Math.min(Math.floor(Math.random() * 5) + 1, state.fbhootLobbyTarget - state.fbhootLobbyCount);
+    const newJoins = [];
+    for (let i = 0; i < batch; i++) {
+      fbhootJoinSeq++;
+      const base = FBHOOT_JOIN_NAMES[Math.floor(Math.random() * FBHOOT_JOIN_NAMES.length)];
+      newJoins.push({ id: fbhootJoinSeq, name: base + fbhootJoinSeq });
+    }
+    const recent = state.fbhootRecentJoins.concat(newJoins).slice(-18);
+    state = Object.assign({}, state, { fbhootLobbyCount: state.fbhootLobbyCount + batch, fbhootRecentJoins: recent });
+    // partial update: just update count + joins without full re-render (avoids flicker)
+    const countEl = document.querySelector('[style*="font-family:\'Anton\';font-size:80px"]');
+    const joinEl = document.querySelector('[style*="min-height:36px"]');
+    if (countEl) countEl.textContent = state.fbhootLobbyCount;
+    if (joinEl) {
+      joinEl.innerHTML = state.fbhootRecentJoins.map(p =>
+        `<div style="background:rgba(57,255,20,0.08);border:1px solid rgba(57,255,20,0.4);border-radius:999px;padding:7px 14px;font-size:13px;font-weight:700;color:#fff;">${esc(p.name)}</div>`
+      ).join('');
+    }
+  }, 180);
+}
+
+function startFbhootRound() {
+  stopFbhootLobby();
+  setState({ phase: 'fbhoot-running', fbhootIndex: 0, fbhootSelected: null, fbhootAnswered: false, fbhootScore: 0 });
+  startFbhootTimer();
+}
+
+// ─── Generation ───────────────────────────────────────────────────────────────
+async function handleFile(file) {
+  if (file.type !== 'application/pdf' && !file.name.toLowerCase().endsWith('.pdf')) {
+    setState({ error: "That's not a PDF — drop a .pdf playbook or scouting report." });
+    return;
+  }
+  setState({ extracting: true, error: '', bank: null, pdfName: file.name });
+  try {
+    const { PDFParse } = await import('https://cdn.jsdelivr.net/npm/pdf-parse@2.4.5/dist/pdf-parse/web/pdf-parse.es.js');
+    PDFParse.setWorker('https://cdn.jsdelivr.net/npm/pdf-parse@2.4.5/dist/pdf-parse/web/pdf.worker.min.mjs');
+    const buf = await file.arrayBuffer();
+    const parser = new PDFParse({ data: new Uint8Array(buf) });
+    const result = await parser.getText();
+    const extracted = (result.text || '').trim();
+    if (!extracted) {
+      setState({ extracting: false, error: "Couldn't find any text in that PDF — try a text-based (not scanned-image) file." });
+      return;
+    }
+    setState({ extracting: false, text: extracted });
+    generate(extracted);
+  } catch(err) {
+    setState({ extracting: false, error: 'Failed to read that PDF. Try a different file.' });
+  }
+}
+
+async function generateBatch(text, category, sideLine, batchCount, avoidQuestions) {
+  const avoidBlock = avoidQuestions && avoidQuestions.length
+    ? `\n\nDo not repeat or closely rephrase any of these already-used questions:\n- ${avoidQuestions.slice(-40).join('\n- ')}`
+    : '';
+  const prompt = `You are FBBank, an AI that deposits a football coach's own document (playbook, scheme, scouting report, terminology sheet, or drill list) into a quiz question bank for players to draw from.
+
+Source material (category: ${category}, side of ball: ${sideLine}):
+"""
+${text}
+"""
+
+Generate exactly ${batchCount} multiple-choice quiz questions that test whether a player understands THIS SPECIFIC material. Spread the questions across the full range of topics covered in the source material rather than clustering on just the opening section. Each question must have exactly 4 answer options with exactly one correct answer, plus ONE concise sentence explaining why that answer is correct. Base every question only on the material given — do not invent unrelated football trivia or rules not mentioned above.${avoidBlock}
+
+Respond with ONLY compact valid JSON on as few lines as possible — no markdown fences, no commentary — in exactly this shape:
+[{"question":"...","options":["...","...","...","..."],"correctIndex":0,"explanation":"..."}]`;
+
+  try {
+    const raw = await callWorker(prompt);
+    let cleaned = (raw||'').trim().replace(/^```json/i,'').replace(/^```/,'').replace(/```$/,'').trim();
+    let parsed;
+    try { parsed = JSON.parse(cleaned); } catch(e) { parsed = salvageJsonArray(cleaned); }
+    if (!parsed || !Array.isArray(parsed)) return null;
+    const clean = parsed
+      .map(q => ({ question: q.question, options: q.options||[], correctIndex: q.correctIndex, explanation: q.explanation||'' }))
+      .filter(q => q.question && q.options.length === 4 && typeof q.correctIndex === 'number');
+    return clean.length ? clean : null;
+  } catch(e) { return null; }
+}
+
+async function generate(overrideText) {
+  const text = ((overrideText !== undefined ? overrideText : state.text) || '').trim();
+  if (!text) { setState({ error: 'Paste some notes first, or drop in a PDF.' }); return; }
+  const total = state.count;
+  setState({ loading: true, error: '', bank: null, genDone: 0, genTotal: total });
+  const { category, customCategory, side } = state;
+  const effectiveCategory = category === 'Other' ? (customCategory.trim() || 'General Football Knowledge') : category;
+  const sideLine = side === 'N/A' ? 'not applicable' : side;
+  const truncatedText = text.slice(0, MAX_SOURCE_CHARS);
+
+  let bank = [];
+  let safety = 0;
+  const maxIter = Math.ceil(total / BATCH_SIZE) + 4;
+
+  while (bank.length < total && safety < maxIter) {
+    safety++;
+    const remaining = total - bank.length;
+    const batchSize = Math.min(BATCH_SIZE, remaining);
+    let batch = null;
+    for (let attempt = 0; attempt < 2 && !batch; attempt++) {
+      batch = await generateBatch(truncatedText, effectiveCategory, sideLine, batchSize, bank.map(q => q.question));
+    }
+    if (!batch || !batch.length) break;
+    bank = bank.concat(batch);
+    state = Object.assign({}, state, { genDone: Math.min(bank.length, total) });
+    // update loading label live
+    const loadEl = document.querySelector('[style*="fbPulse"]');
+    if (loadEl) loadEl.textContent = `FBBank has deposited ${Math.min(bank.length, total)} of ${total} questions…`;
+  }
+
+  bank = bank.slice(0, total);
+
+  if (!bank.length) {
+    setState({ loading: false, error: 'FBBank had trouble generating questions — try again, or shorten/simplify the input.' });
+    return;
+  }
+
+  setState({
+    loading: false, bank,
+    partialNote: bank.length < total ? `Generated ${bank.length} of ${total} requested — you can still play these ${bank.length}.` : '',
+    phase: 'mode-select',
+    learnIndex: 0, learnFlipped: false,
+    quizLength: 0, quizIndex: 0, quizSelected: null, quizAnswered: false, quizScore: 0,
+    gameIndex: 0, gameSelected: null, gameAnswered: false, gameScore: 0, gameStreak: 0, gameBestStreak: 0,
+    testLength: 0, testIndex: 0, testAnswers: [],
+    fbhootIndex: 0, fbhootSelected: null, fbhootAnswered: false, fbhootScore: 0,
+  });
+}
+
+// ─── Boot ────────────────────────────────────────────────────────────────────
+render();
+</script>
+</body>
+</html>
