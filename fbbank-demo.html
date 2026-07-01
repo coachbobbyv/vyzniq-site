@@ -94,15 +94,24 @@ function setState(patch) {
 }
 
 // ─── AI Call ─────────────────────────────────────────────────────────────────
-async function callWorker(prompt) {
+async function callWorker(text, category, count) {
   const resp = await fetch(WORKER, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ prompt, count: BATCH_SIZE })
+    body: JSON.stringify({ text, category, count })
   });
   if (!resp.ok) throw new Error('Worker error ' + resp.status);
   const data = await resp.json();
-  return data.result || data.text || data.content || '';
+  // Worker returns {questions:[{q,opts,ans,exp}]} — map to our shape
+  if (Array.isArray(data.questions)) {
+    return data.questions.map(q => ({
+      question: q.q,
+      options: q.opts,
+      correctIndex: q.ans,
+      explanation: q.exp || ''
+    }));
+  }
+  return null;
 }
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
@@ -790,31 +799,11 @@ async function handleFile(file) {
   }
 }
 
-async function generateBatch(text, category, sideLine, batchCount, avoidQuestions) {
-  const avoidBlock = avoidQuestions && avoidQuestions.length
-    ? `\n\nDo not repeat or closely rephrase any of these already-used questions:\n- ${avoidQuestions.slice(-40).join('\n- ')}`
-    : '';
-  const prompt = `You are FBBank, an AI that deposits a football coach's own document (playbook, scheme, scouting report, terminology sheet, or drill list) into a quiz question bank for players to draw from.
-
-Source material (category: ${category}, side of ball: ${sideLine}):
-"""
-${text}
-"""
-
-Generate exactly ${batchCount} multiple-choice quiz questions that test whether a player understands THIS SPECIFIC material. Spread the questions across the full range of topics covered in the source material rather than clustering on just the opening section. Each question must have exactly 4 answer options with exactly one correct answer, plus ONE concise sentence explaining why that answer is correct. Base every question only on the material given — do not invent unrelated football trivia or rules not mentioned above.${avoidBlock}
-
-Respond with ONLY compact valid JSON on as few lines as possible — no markdown fences, no commentary — in exactly this shape:
-[{"question":"...","options":["...","...","...","..."],"correctIndex":0,"explanation":"..."}]`;
-
+async function generateBatch(text, category, sideLine, batchCount) {
   try {
-    const raw = await callWorker(prompt);
-    let cleaned = (raw||'').trim().replace(/^```json/i,'').replace(/^```/,'').replace(/```$/,'').trim();
-    let parsed;
-    try { parsed = JSON.parse(cleaned); } catch(e) { parsed = salvageJsonArray(cleaned); }
-    if (!parsed || !Array.isArray(parsed)) return null;
-    const clean = parsed
-      .map(q => ({ question: q.question, options: q.options||[], correctIndex: q.correctIndex, explanation: q.explanation||'' }))
-      .filter(q => q.question && q.options.length === 4 && typeof q.correctIndex === 'number');
+    const results = await callWorker(text, category, batchCount);
+    if (!Array.isArray(results)) return null;
+    const clean = results.filter(q => q.question && Array.isArray(q.options) && q.options.length === 4 && typeof q.correctIndex === 'number');
     return clean.length ? clean : null;
   } catch(e) { return null; }
 }
@@ -839,7 +828,7 @@ async function generate(overrideText) {
     const batchSize = Math.min(BATCH_SIZE, remaining);
     let batch = null;
     for (let attempt = 0; attempt < 2 && !batch; attempt++) {
-      batch = await generateBatch(truncatedText, effectiveCategory, sideLine, batchSize, bank.map(q => q.question));
+      batch = await generateBatch(truncatedText, effectiveCategory, sideLine, batchSize);
     }
     if (!batch || !batch.length) break;
     bank = bank.concat(batch);
