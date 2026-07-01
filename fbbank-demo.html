@@ -768,12 +768,17 @@ async function handleFile(file) {
   }
   setState({ extracting: true, error: '', bank: null, pdfName: file.name });
   try {
-    const { PDFParse } = await import('https://cdn.jsdelivr.net/npm/pdf-parse@2.4.5/dist/pdf-parse/web/pdf-parse.es.js');
-    PDFParse.setWorker('https://cdn.jsdelivr.net/npm/pdf-parse@2.4.5/dist/pdf-parse/web/pdf.worker.min.mjs');
+    const pdfjsLib = await import('https://cdn.jsdelivr.net/npm/pdfjs-dist@4.4.168/build/pdf.mjs');
+    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdn.jsdelivr.net/npm/pdfjs-dist@4.4.168/build/pdf.worker.mjs';
     const buf = await file.arrayBuffer();
-    const parser = new PDFParse({ data: new Uint8Array(buf) });
-    const result = await parser.getText();
-    const extracted = (result.text || '').trim();
+    const pdfDoc = await pdfjsLib.getDocument({ data: buf }).promise;
+    let extracted = '';
+    for (let i = 1; i <= pdfDoc.numPages; i++) {
+      const page = await pdfDoc.getPage(i);
+      const content = await page.getTextContent();
+      extracted += content.items.map(item => item.str).join(' ') + '\n';
+    }
+    extracted = extracted.trim();
     if (!extracted) {
       setState({ extracting: false, error: "Couldn't find any text in that PDF — try a text-based (not scanned-image) file." });
       return;
