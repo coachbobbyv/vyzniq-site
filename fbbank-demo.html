@@ -599,11 +599,11 @@ function attachEvents(s) {
   const dz = document.getElementById('dropzone');
   if (dz) {
     dz.addEventListener('click', () => document.getElementById('file-input') && document.getElementById('file-input').click());
-    dz.addEventListener('dragover', e => { e.preventDefault(); if (!state.dragActive) setState({ dragActive: true }); });
-    dz.addEventListener('dragleave', e => { e.preventDefault(); setState({ dragActive: false }); });
+    dz.addEventListener('dragover', e => { e.preventDefault(); dz.style.borderColor = '#39FF14'; dz.style.background = 'rgba(57,255,20,0.06)'; });
+    dz.addEventListener('dragleave', e => { e.preventDefault(); dz.style.borderColor = ''; dz.style.background = ''; });
     dz.addEventListener('drop', e => {
       e.preventDefault();
-      setState({ dragActive: false });
+      dz.style.borderColor = ''; dz.style.background = '';
       const f = e.dataTransfer.files && e.dataTransfer.files[0];
       if (f) handleFile(f);
     });
