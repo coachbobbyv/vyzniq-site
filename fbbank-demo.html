@@ -203,7 +203,7 @@ function renderSetup(s) {
   const disabled = s.loading || s.extracting;
   const dzBorder = s.dragActive ? '#39FF14' : 'rgba(255,255,255,0.22)';
   const dzBg = s.dragActive ? 'rgba(57,255,20,0.06)' : 'rgba(255,255,255,0.02)';
-  let dzTitle = 'Drag a PDF here — playbook, install sheet, or scouting report';
+  let dzTitle = 'Drag a PDF here — or copy &amp; paste from any Word doc';
   let dzSub = 'or click to browse · FBBank scrapes it automatically';
   if (s.extracting) { dzTitle = 'Scraping ' + (s.pdfName || 'PDF') + '…'; dzSub = 'Reading every page and pulling out the text'; }
   else if (s.pdfName) { dzTitle = 'Loaded: ' + esc(s.pdfName); dzSub = 'Drop another PDF to replace it'; }
@@ -230,7 +230,7 @@ function renderSetup(s) {
     </div>
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
       <div style="font-size:12px;font-weight:800;letter-spacing:2px;color:rgba(255,255,255,0.5);text-transform:uppercase;">Playbook / scheme / scouting notes to deposit</div>
-      <button id="btn-load-sample" style="background:transparent;border:1px solid rgba(255,255,255,0.25);color:#fff;font-weight:700;font-size:12px;padding:7px 14px;border-radius:8px;">Load Sample Scheme</button>
+      <button id="btn-load-sample" style="background:transparent;border:1px solid rgba(255,255,255,0.25);color:#fff;font-weight:700;font-size:12px;padding:7px 14px;border-radius:8px;">Load Sample Content</button>
     </div>
     <textarea id="main-textarea" placeholder="e.g. Cover 3 zone defense — free safety rotates to the deep middle third, corners play outside leverage..." style="width:100%;min-height:100px;background:#101010;border:2px solid rgba(255,255,255,0.14);color:#fff;font-size:14px;line-height:1.5;padding:14px 16px;border-radius:12px;resize:vertical;margin-bottom:22px;" onfocus="this.style.borderColor='#39FF14'" onblur="this.style.borderColor='rgba(255,255,255,0.14)'"></textarea>
     <div style="margin-bottom:20px;">
