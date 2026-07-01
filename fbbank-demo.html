@@ -869,6 +869,10 @@ async function generate(overrideText) {
 }
 
 // ─── Boot ────────────────────────────────────────────────────────────────────
+// Prevent the browser from opening PDFs when dropped anywhere on the page
+document.addEventListener('dragover', e => e.preventDefault());
+document.addEventListener('drop', e => e.preventDefault());
+
 render();
 </script>
 </body>
