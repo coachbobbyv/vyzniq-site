@@ -29,6 +29,29 @@
 
   <script>
 
+  /* __purchaseBtn — add a "Purchase" button next to the Pro-section "Book a Demo",
+     linking to the team plans page. Polls until the button renders (self-unpack). */
+  (function () {
+    var tries = 0;
+    var iv = setInterval(function () {
+      tries++;
+      if (document.querySelector('a[data-purchase-plans]')) { clearInterval(iv); return; }
+      var demo = [].slice.call(document.querySelectorAll('a')).filter(function (a) {
+        return /book a demo/i.test(a.textContent || '');
+      })[0];
+      if (demo) {
+        var b = document.createElement('a');
+        b.href = '/team.html';
+        b.setAttribute('data-purchase-plans', '1');
+        b.textContent = 'Purchase Team Plan';
+        b.style.cssText = 'display:inline-block;background:#FFA602;color:#111;font-weight:800;font-size:1rem;padding:16px 30px;border-radius:11px;text-decoration:none;margin-left:10px;box-shadow:0 10px 30px rgba(255,166,2,0.28);';
+        demo.parentNode.insertBefore(b, demo.nextSibling);
+        clearInterval(iv);
+      }
+      if (tries > 80) clearInterval(iv);
+    }, 400);
+  })();
+
   /* __leadCapture — capture site signups (survives the self-unpack).
      Demo form (has name/program) -> demo_requests; plain email box -> leads. */
   (function () {
