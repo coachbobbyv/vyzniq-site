@@ -29,6 +29,21 @@
 
   <script>
 
+  /* __launchPill — give the "Launching September" text a solid black backdrop so it
+     sits ON TOP of the animated lights (esp. on phone). Flash only the text, not the bg. */
+  (function(){
+    function addStyle(){ if(document.getElementById("__launchStyle"))return; var s=document.createElement("style"); s.id="__launchStyle"; s.textContent="@keyframes launchFlash{0%,45%,100%{color:#fff;}65%{color:rgba(255,255,255,0.2);}}"; (document.head||document.documentElement).appendChild(s); }
+    var tries=0, iv=setInterval(function(){ tries++;
+      var el=[].slice.call(document.querySelectorAll("span,div,p")).filter(function(n){ return n.children.length===0 && /launching september/i.test(n.textContent||""); })[0];
+      if(el){ addStyle();
+        el.style.background="#000"; el.style.display="inline-block"; el.style.padding="7px 16px";
+        el.style.borderRadius="8px"; el.style.position="relative"; el.style.zIndex="5";
+        el.style.animation="launchFlash 2.6s ease-in-out infinite";
+        clearInterval(iv); }
+      if(tries>80)clearInterval(iv);
+    },400);
+  })();
+
   /* __gfaFlash — make the red "Get Full Access" CTA black with a flashing red border. */
   (function(){
     function addStyle(){ if(document.getElementById("__gfaStyle"))return; var st=document.createElement("style"); st.id="__gfaStyle"; st.textContent="@keyframes gfaFlash{0%,100%{border-color:#F52C05;box-shadow:0 0 0 0 rgba(245,44,5,0.55);}50%{border-color:#ff6a45;box-shadow:0 0 16px 3px rgba(245,44,5,0.8);}}"; (document.head||document.documentElement).appendChild(st); }
