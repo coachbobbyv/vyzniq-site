@@ -28,6 +28,29 @@
   <div id="__bundler_loading">Unpacking...</div>
 
   <script>
+
+  /* __leadCapture — capture marketing email signups. Registered on document so it
+     survives the page's self-unpack (documentElement swap); posts to Firestore "leads". */
+  (function () {
+    var URL = "https://firestore.googleapis.com/v1/projects/fbiq-e89ed/databases/(default)/documents/leads?key=AIzaSyB8HA3FA3uN3ervrvqAMoecoAhsEK2XsIg";
+    var seen = {};
+    document.addEventListener("submit", function (e) {
+      try {
+        var form = e.target; if (!form || !form.querySelector) return;
+        var input = form.querySelector('input[type=email]') || form.querySelector('input[placeholder*="email" i]') || form.querySelector('input[placeholder*="@"]');
+        if (!input) return;
+        var email = (input.value || "").trim();
+        if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) return;
+        if (seen[email]) return; seen[email] = 1;
+        var source = ((form.textContent || "").toLowerCase().indexOf("demo") >= 0) ? "demo" : "launch";
+        fetch(URL, { method: "POST", headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ fields: {
+            email: { stringValue: email }, source: { stringValue: source },
+            page: { stringValue: location.href }, createdAt: { timestampValue: new Date().toISOString() }
+          } }) }).catch(function () {});
+      } catch (_) {}
+    }, true);
+  })();
     
 document.addEventListener('DOMContentLoaded', async function() {
   const loading = document.getElementById('__bundler_loading');
