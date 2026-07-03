@@ -29,25 +29,33 @@
 
   <script>
 
-  /* __leadCapture — capture marketing email signups. Registered on document so it
-     survives the page's self-unpack (documentElement swap); posts to Firestore "leads". */
+  /* __leadCapture — capture site signups (survives the self-unpack).
+     Demo form (has name/program) -> demo_requests; plain email box -> leads. */
   (function () {
-    var URL = "https://firestore.googleapis.com/v1/projects/fbiq-e89ed/databases/(default)/documents/leads?key=AIzaSyB8HA3FA3uN3ervrvqAMoecoAhsEK2XsIg";
+    var BASE = "https://firestore.googleapis.com/v1/projects/fbiq-e89ed/databases/(default)/documents/";
+    var K = "?key=AIzaSyB8HA3FA3uN3ervrvqAMoecoAhsEK2XsIg";
     var seen = {};
+    function val(form, sel) { var el = form.querySelector(sel); return el ? (el.value || "").trim() : ""; }
+    function post(col, fields) {
+      fetch(BASE + col + K, { method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ fields: fields }) }).catch(function () {});
+    }
+    function S(v) { return { stringValue: v || "" }; }
     document.addEventListener("submit", function (e) {
       try {
         var form = e.target; if (!form || !form.querySelector) return;
-        var input = form.querySelector('input[type=email]') || form.querySelector('input[placeholder*="email" i]') || form.querySelector('input[placeholder*="@"]');
-        if (!input) return;
-        var email = (input.value || "").trim();
+        var emailEl = form.querySelector('input[type=email]') || form.querySelector('input[placeholder*="email" i]') || form.querySelector('input[placeholder*="@"]');
+        if (!emailEl) return;
+        var email = (emailEl.value || "").trim();
         if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) return;
-        if (seen[email]) return; seen[email] = 1;
-        var source = ((form.textContent || "").toLowerCase().indexOf("demo") >= 0) ? "demo" : "launch";
-        fetch(URL, { method: "POST", headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ fields: {
-            email: { stringValue: email }, source: { stringValue: source },
-            page: { stringValue: location.href }, createdAt: { timestampValue: new Date().toISOString() }
-          } }) }).catch(function () {});
+        var name = val(form, 'input[placeholder*="name" i]');
+        var program = val(form, 'input[placeholder*="program" i]') || val(form, 'input[placeholder*="school" i]');
+        var isDemo = !!(name || program) || ((form.textContent || "").toLowerCase().indexOf("demo") >= 0);
+        var key = (isDemo ? "d:" : "l:") + email;
+        if (seen[key]) return; seen[key] = 1;
+        var now = { timestampValue: new Date().toISOString() }, page = S(location.href);
+        if (isDemo) post("demo_requests", { name: S(name), program: S(program), email: S(email), page: page, createdAt: now });
+        else post("leads", { email: S(email), source: S("launch"), page: page, createdAt: now });
       } catch (_) {}
     }, true);
   })();
