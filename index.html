@@ -81,6 +81,27 @@
     }, 400);
   })();
 
+  /* __triviaLinks — the "Play Free" / "Start Free" CTAs should drop the user STRAIGHT into
+     the live trivia (fbiq.app/play), not the app root. Retarget any "Play Free" / "Start Free"
+     anchor to /play; leave "Get Full Access" (premium path) pointing at the app. Self-unpacks. */
+  (function () {
+    var tries = 0;
+    function apply() {
+      var links = [].slice.call(document.querySelectorAll('a')).filter(function (a) {
+        var t = a.textContent || '';
+        return (/play free|start free|free to start/i.test(t)) && !/get full access/i.test(t);
+      });
+      links.forEach(function (a) { a.href = 'https://fbiq.app/play'; a.setAttribute('data-trivia-link', '1'); });
+      return links.length;
+    }
+    var iv = setInterval(function () {
+      tries++;
+      if (apply() > 0 || tries > 80) clearInterval(iv);
+    }, 400);
+    // keep re-applying on later re-renders so the links can't revert
+    try { new MutationObserver(function () { apply(); }).observe(document.documentElement, { childList: true, subtree: true }); } catch (e) {}
+  })();
+
   /* __leadCapture — capture site signups (survives the self-unpack).
      Demo form (has name/program) -> demo_requests; plain email box -> leads. */
   (function () {
