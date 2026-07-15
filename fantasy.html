@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FBIQ Fantasy — Win Your League with Football IQ</title>
+<meta name="description" content="FBIQ Fantasy: draft strategy, start/sit calls, waiver wire, matchups and more — gamified with XP and rewards. $4.99/mo, $39.99/yr, or $99.99/yr for your whole league.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root{ --red:#F52C05; --orange:#FFA602; --green:#39FF14; --muted:rgba(255,255,255,0.55); }
+  *{ margin:0; padding:0; box-sizing:border-box; }
+  body{ background:#0a0a0a; color:#fff; font-family:'Archivo',sans-serif; line-height:1.5; -webkit-font-smoothing:antialiased; }
+  a{ color:inherit; text-decoration:none; }
+  .wrap{ max-width:980px; margin:0 auto; padding:0 20px; }
+  .nav{ display:flex; align-items:center; justify-content:space-between; padding:18px 0; }
+  .logo{ font-weight:900; font-size:1.4rem; letter-spacing:0.5px; }
+  .logo .fb{ color:var(--red); } .logo .iq{ color:#fff; } .logo .fan{ color:var(--green); font-size:0.95rem; }
+  .nav a.back{ color:var(--muted); font-size:0.85rem; font-weight:700; }
+  .hero{ text-align:center; padding:52px 0 8px; }
+  .eyebrow{ color:var(--green); font-weight:900; letter-spacing:3px; font-size:0.72rem; text-transform:uppercase; margin-bottom:14px; }
+  h1{ font-size:2.7rem; font-weight:900; line-height:1.04; letter-spacing:-0.5px; margin-bottom:14px; }
+  h1 .accent{ color:var(--green); }
+  .sub{ color:var(--muted); font-size:1.05rem; max-width:600px; margin:0 auto 4px; }
+
+  /* Pricing */
+  .plans{ display:grid; grid-template-columns:repeat(3, 1fr); gap:16px; padding:34px 0 8px; }
+  .plan{ background:#0d0d0d; border:1px solid #262626; border-radius:18px; padding:26px 22px; display:flex; flex-direction:column; text-align:center; position:relative; }
+  .plan.best{ border-color:var(--green); box-shadow:0 0 28px rgba(57,255,20,0.16); }
+  .badge{ position:absolute; top:-11px; left:50%; transform:translateX(-50%); background:var(--green); color:#052b00; font-weight:900; font-size:0.62rem; letter-spacing:1px; text-transform:uppercase; padding:4px 12px; border-radius:999px; white-space:nowrap; }
+  .plan .name{ font-weight:900; font-size:1.05rem; margin-bottom:4px; }
+  .plan .who{ color:var(--muted); font-size:0.78rem; min-height:34px; margin-bottom:10px; }
+  .plan .amt{ font-size:2.3rem; font-weight:900; line-height:1; }
+  .plan .amt span{ font-size:0.85rem; font-weight:500; color:var(--muted); }
+  .plan .sm{ color:var(--muted); font-size:0.75rem; margin-top:6px; min-height:18px; }
+  .buy{ display:block; margin-top:18px; background:var(--red); color:#fff; font-weight:800; font-size:0.98rem; padding:14px; border-radius:12px; transition:transform .1s, background .15s; }
+  .buy:hover{ transform:translateY(-2px); background:#ff3d12; }
+  .plan.best .buy{ background:var(--green); color:#052b00; }
+  .plan.best .buy:hover{ background:#5dff3a; }
+  .note{ color:var(--muted); font-size:0.8rem; margin-top:18px; text-align:center; }
+  .freeline{ text-align:center; margin-top:10px; }
+  .freeline a{ color:var(--muted); font-size:0.85rem; font-weight:700; border-bottom:1px solid rgba(255,255,255,0.2); padding-bottom:1px; }
+
+  section{ padding:44px 0; border-top:1px solid rgba(255,255,255,0.07); }
+  h2{ font-size:1.5rem; font-weight:900; margin-bottom:22px; text-align:center; }
+  .features{ display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:14px; }
+  .feat{ background:#0d0d0d; border:1px solid #222; border-radius:14px; padding:18px; }
+  .feat .ic{ font-size:1.4rem; margin-bottom:8px; }
+  .feat .t{ font-weight:800; margin-bottom:4px; }
+  .feat .d{ color:var(--muted); font-size:0.85rem; }
+  .faq{ max-width:680px; margin:0 auto; }
+  .qa{ border:1px solid #222; border-radius:12px; padding:16px 18px; margin-bottom:10px; background:#0d0d0d; }
+  .qa .q{ font-weight:800; margin-bottom:6px; }
+  .qa .a{ color:var(--muted); font-size:0.9rem; }
+  footer{ text-align:center; color:var(--muted); font-size:0.78rem; padding:30px 0 50px; }
+  @media(max-width:720px){ .plans{ grid-template-columns:1fr; } h1{ font-size:2.1rem; } .plan.best{ order:-1; } }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="nav">
+      <div class="logo"><span class="fb">FB</span><span class="iq">IQ</span> <span class="fan">fantasy</span></div>
+      <a class="back" href="/">← vyzniq.com</a>
+    </div>
+
+    <div class="hero">
+      <div class="eyebrow">FBIQ Fantasy</div>
+      <h1>Win your league with <span class="accent">real football IQ.</span></h1>
+      <p class="sub">Draft strategy, start/sit calls, waiver wire, matchups, trades — a whole learning system built for fantasy, gamified with XP and rewards. Stop guessing. Start knowing.</p>
+    </div>
+
+    <!-- Three tiers. Each button goes straight to its Stripe checkout. After
+         paying, Stripe sends the buyer to fbiq.app to set up their account,
+         and the plan unlocks automatically (matched by their email). -->
+    <div class="plans">
+      <div class="plan">
+        <div class="name">Monthly</div>
+        <div class="who">Try it out, cancel anytime.</div>
+        <div class="amt">$4.99<span>/mo</span></div>
+        <div class="sm">Billed monthly</div>
+        <a class="buy" href="https://buy.stripe.com/9B6aEW1U6aUBbeI5cH5Ne01">Get Fantasy →</a>
+      </div>
+
+      <div class="plan best">
+        <div class="badge">Best Value · Save 33%</div>
+        <div class="name">Yearly</div>
+        <div class="who">Full season, one payment.</div>
+        <div class="amt">$39.99<span>/yr</span></div>
+        <div class="sm">~$3.33/mo</div>
+        <a class="buy" href="https://buy.stripe.com/7sYeVc9my9QxeqUeNh5Ne00">Get Fantasy →</a>
+      </div>
+
+      <div class="plan">
+        <div class="name">League / Team</div>
+        <div class="who">Bring your whole league along.</div>
+        <div class="amt">$99.99<span>/yr</span></div>
+        <div class="sm">One price for the group</div>
+        <a class="buy" href="https://buy.stripe.com/6oUbJ02Ya1k1fuY9sX5Ne07">Get the League →</a>
+      </div>
+    </div>
+
+    <div class="note">After you pay, we'll email you to finish setting up your account — use that same email and your subscription unlocks automatically. Cancel anytime; you keep access through the end of your billing period.</div>
+    <div class="freeline"><a href="https://fbiq.app/play">Just want to play free trivia first? →</a></div>
+  </div>
+
+  <section>
+    <div class="wrap">
+      <h2>What you get</h2>
+      <div class="features">
+        <div class="feat"><div class="ic">🏆</div><div class="t">Draft Strategy</div><div class="d">ADP, value picks, positional tiers, Zero-RB, superflex, dynasty — draft like you've done it a hundred times.</div></div>
+        <div class="feat"><div class="ic">🎯</div><div class="t">Start / Sit Decisions</div><div class="d">Matchups, floor vs. ceiling, target share, weather, Vegas — make the right call every week.</div></div>
+        <div class="feat"><div class="ic">📈</div><div class="t">Waiver Wire & FAAB</div><div class="d">Budget your FAAB, time your claims, and find the streamers and stashes before your league does.</div></div>
+        <div class="feat"><div class="ic">🔄</div><div class="t">Trade Evaluation</div><div class="d">Know a fair deal from a fleece — buy low, sell high, and negotiate with leverage.</div></div>
+        <div class="feat"><div class="ic">🛡️</div><div class="t">Streaming Positions</div><div class="d">QB, TE, D/ST, kicker — when to stream, who to target, and how to squeeze out points.</div></div>
+        <div class="feat"><div class="ic">⚡</div><div class="t">Gamified Learning</div><div class="d">Earn XP, level up, collect cards, and climb the leaderboard while you get sharper.</div></div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap">
+      <h2>Plus the entire FBIQ app 🔓</h2>
+      <p class="sub" style="text-align:center; margin:-8px auto 24px;">Fantasy isn't just the fantasy content — you get <strong style="color:#fff;">full access to everything in FBIQ Premier</strong>, unlocked from day one.</p>
+      <div class="features">
+        <div class="feat"><div class="ic">🗄️</div><div class="t">Every Database</div><div class="d">Full access to all of it — rules, terminology, situations, positions, schemes, history, and every bank we add.</div></div>
+        <div class="feat"><div class="ic">⚔️</div><div class="t">FB 1 on 1</div><div class="d">Challenge anyone head-to-head, real time. Prove who really knows ball.</div></div>
+        <div class="feat"><div class="ic">🎯</div><div class="t">FBhoot</div><div class="d">Live multiplayer quiz — host a game and play with your whole league at once.</div></div>
+        <div class="feat"><div class="ic">🏈</div><div class="t">Unlimited Trivia & Games</div><div class="d">NCAA & NFL trivia with no cap, plus Drive, Red Zone, 4th &amp; Long and more.</div></div>
+        <div class="feat"><div class="ic">🎓</div><div class="t">The Full Learning System</div><div class="d">Learn the game like a coach — every mode, every difficulty, no XP gates.</div></div>
+        <div class="feat"><div class="ic">🏆</div><div class="t">XP, Cards & Leaderboards</div><div class="d">Earn XP, level up from Rookie to Legend, collect cards, and climb the board.</div></div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap faq">
+      <h2>Questions</h2>
+      <div class="qa"><div class="q">How does signing up work?</div><div class="a">Pick a plan and check out. After you pay, we email you to create your username and password — use the same email you paid with, and your subscription unlocks automatically.</div></div>
+      <div class="qa"><div class="q">Monthly, yearly, or league — which one?</div><div class="a">Same full Fantasy access on all three. Yearly ($39.99) is about 33% cheaper than paying monthly. The League plan ($99.99/yr) is the deal if you want to bring your whole league or team along.</div></div>
+      <div class="qa"><div class="q">Can I cancel?</div><div class="a">Anytime. You keep full access through the end of the period you already paid for, then it simply doesn't renew.</div></div>
+      <div class="qa"><div class="q">Is there a free version?</div><div class="a">Yes — you can <a href="https://fbiq.app/play" style="color:var(--green);">play free fantasy trivia</a> anytime. Fantasy unlocks the full learning system.</div></div>
+    </div>
+  </section>
+
+  <div class="wrap" style="text-align:center; padding:48px 0 8px;">
+    <h2 style="margin-bottom:10px;">Draft smarter this season.</h2>
+    <p class="sub" style="margin-bottom:22px;">$4.99/mo, $39.99/yr, or $99.99 for your whole league.</p>
+    <a class="buy" style="display:inline-block; padding:15px 40px; max-width:none;" href="https://buy.stripe.com/7sYeVc9my9QxeqUeNh5Ne00">Get Fantasy 🏆</a>
+  </div>
+
+  <footer>
+    <div class="wrap"><span class="logo" style="font-size:1rem;"><span class="fb">FB</span><span class="iq">IQ</span></span> · a VYZNIQ app · <a href="/" style="color:var(--muted);">vyzniq.com</a></div>
+  </footer>
+</body>
+</html>
