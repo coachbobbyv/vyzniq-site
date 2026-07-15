@@ -362,7 +362,9 @@
       <p style="color:rgba(255,255,255,.6);font-size:.98rem;text-align:center;max-width:52ch;margin:0 auto 26px;">Tell us where to reach you and we'll set up a walkthrough. No payment required.</p>
       <form id="demoForm" style="display:flex;flex-direction:column;gap:12px;max-width:440px;margin:0 auto;">
         <input name="name" type="text" placeholder="Your name" autocomplete="name" style="width:100%;background:#000;border:1px solid rgba(255,255,255,.18);border-radius:11px;color:#fff;font-family:'Archivo',sans-serif;font-size:1rem;padding:13px 15px;">
+        <select name="title" style="width:100%;background:#000;border:1px solid rgba(255,255,255,.18);border-radius:11px;color:#fff;font-family:'Archivo',sans-serif;font-size:1rem;padding:13px 15px;"><option value="">Title / role (optional)</option><option>Head Coach</option><option>Offensive Coordinator</option><option>Defensive Coordinator</option><option>Position Coach</option><option>Athletic Director</option><option>Other</option></select>
         <input name="email" type="email" required placeholder="Email *" autocomplete="email" style="width:100%;background:#000;border:1px solid rgba(255,255,255,.18);border-radius:11px;color:#fff;font-family:'Archivo',sans-serif;font-size:1rem;padding:13px 15px;">
+        <input name="phone" type="tel" placeholder="Phone (optional)" autocomplete="tel" style="width:100%;background:#000;border:1px solid rgba(255,255,255,.18);border-radius:11px;color:#fff;font-family:'Archivo',sans-serif;font-size:1rem;padding:13px 15px;">
         <input name="program" type="text" placeholder="Team / program (optional)" style="width:100%;background:#000;border:1px solid rgba(255,255,255,.18);border-radius:11px;color:#fff;font-family:'Archivo',sans-serif;font-size:1rem;padding:13px 15px;">
         <button type="submit" style="background:#39FF14;color:#052b00;font-weight:900;font-size:1rem;padding:14px 0;border:none;border-radius:11px;cursor:pointer;box-shadow:0 10px 28px rgba(57,255,20,.28);" style-hover="background:#4dff2b;">Request my demo →</button>
         <div id="demoMsg" role="status" style="text-align:center;font-size:.9rem;min-height:1.2em;margin-top:2px;"></div>
@@ -390,7 +392,7 @@ document.querySelectorAll('[style-hover]').forEach(function(el){
     var btn=f.querySelector('button'), label=btn.textContent;
     btn.disabled=true; btn.textContent='Sending…'; msg.textContent='';
     fetch("https://fbiq-ai.coachbobbyv.workers.dev/demo-request",{method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({name:(f.name.value||'').trim(),email:email,program:(f.program.value||'').trim(),source:"pro-page"})})
+      body:JSON.stringify({name:(f.name.value||'').trim(),email:email,phone:(f.phone.value||'').trim(),title:(f.title.value||'').trim(),program:(f.program.value||'').trim(),source:"pro-page"})})
       .then(function(r){return r.json();})
       .then(function(j){
         if(j&&j.ok){f.reset();msg.style.color='#39FF14';msg.textContent="Got it! We'll be in touch shortly.";}
