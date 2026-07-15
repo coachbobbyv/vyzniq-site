@@ -130,9 +130,14 @@
   </footer>
 
 <script>
-  // Team Stripe Payment Links — paste the three one-time links here when Stripe is connected.
-  // Until then, the buttons route coaches to Book a Demo so nothing dead-ends.
-  var TEAM_LINKS = { youth: "", ms: "", hs: "" };
+  // Team Stripe Payment Links (live, 2026-07-14). Pay-first: coach pays ->
+  // Stripe redirects to fbiq.app to set up -> team is provisioned by email.
+  // Empty string would fall back to Book-a-Demo (nothing dead-ends).
+  var TEAM_LINKS = {
+    youth: "https://buy.stripe.com/00weVcgP08Mt96AeNh5Ne06", // Pro Youth/Flag/7on7 $199.99/yr
+    ms:    "https://buy.stripe.com/4gM00icyKfaR82w0Wr5Ne04", // Pro MS $499/yr
+    hs:    "https://buy.stripe.com/8x2fZggP0e6NdmQgVp5Ne05", // Pro HS $999.99/yr
+  };
   function buyTeam(tier){
     var url = TEAM_LINKS[tier];
     if (url) { window.location.href = url; return; }
