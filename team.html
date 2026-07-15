@@ -1,149 +1,367 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>FBIQ Pro — Team Plans</title>
-<meta name="description" content="FBIQ Pro for teams and organizations: shared playbook, custom question banks, player analytics, and a coach admin dashboard. Youth $199, Middle School $499, High School/Org $999 per year.">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>FBIQ Pro — Teams & Programs</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <style>
-  :root{ --red:#F52C05; --orange:#FFA602; --green:#39FF14; --muted:rgba(255,255,255,0.55); }
-  *{ margin:0; padding:0; box-sizing:border-box; }
-  body{ background:#0a0a0a; color:#fff; font-family:'Archivo',sans-serif; line-height:1.5; -webkit-font-smoothing:antialiased; }
-  a{ color:inherit; text-decoration:none; }
-  button{ font-family:inherit; cursor:pointer; }
-  .wrap{ max-width:980px; margin:0 auto; padding:0 20px; }
-  .nav{ display:flex; align-items:center; justify-content:space-between; padding:18px 0; }
-  .logo{ font-weight:900; font-size:1.4rem; letter-spacing:0.5px; }
-  .logo .fb{ color:var(--red); } .logo .iq{ color:#fff; }
-  .nav a.back{ color:var(--muted); font-size:0.85rem; font-weight:700; }
-  .hero{ text-align:center; padding:52px 0 34px; }
-  .eyebrow{ color:var(--red); font-weight:900; letter-spacing:3px; font-size:0.72rem; text-transform:uppercase; margin-bottom:14px; }
-  h1{ font-size:2.5rem; font-weight:900; line-height:1.05; letter-spacing:-0.5px; margin-bottom:14px; }
-  h1 .accent{ color:var(--red); }
-  .sub{ color:var(--muted); font-size:1.05rem; max-width:600px; margin:0 auto; }
-  .tiers{ display:grid; grid-template-columns:repeat(auto-fit,minmax(250px,1fr)); gap:16px; margin:30px 0 10px; }
-  .tier{ background:#0d0d0d; border:1px solid #262626; border-radius:18px; padding:26px 22px; display:flex; flex-direction:column; }
-  .tier.pop{ border-color:var(--green); box-shadow:0 0 30px rgba(57,255,20,0.14); }
-  .tier .badge{ align-self:flex-start; font-size:0.62rem; font-weight:900; letter-spacing:1.5px; text-transform:uppercase; color:#111; background:var(--green); border-radius:20px; padding:3px 10px; margin-bottom:12px; }
-  .tier .name{ font-weight:900; font-size:1.15rem; }
-  .tier .who{ color:var(--muted); font-size:0.8rem; margin-bottom:14px; }
-  .tier .amt{ font-size:2.2rem; font-weight:900; }
-  .tier .amt span{ font-size:0.85rem; font-weight:500; color:var(--muted); }
-  .tier .buy{ margin-top:18px; width:100%; background:var(--red); color:#fff; font-weight:800; font-size:1rem; padding:14px; border:none; border-radius:12px; transition:background .15s, transform .1s; }
-  .tier.pop .buy{ background:var(--red); color:#fff; }
-  .tier .buy:hover{ transform:translateY(-2px); filter:brightness(1.05); }
-  .note{ text-align:center; color:var(--muted); font-size:0.82rem; margin-top:8px; }
-  section{ padding:44px 0; border-top:1px solid rgba(255,255,255,0.07); }
-  h2{ font-size:1.5rem; font-weight:900; margin-bottom:22px; text-align:center; }
-  .features{ display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:14px; }
-  .feat{ background:#0d0d0d; border:1px solid #222; border-radius:14px; padding:18px; }
-  .feat .ic{ font-size:1.4rem; margin-bottom:8px; }
-  .feat .t{ font-weight:800; margin-bottom:4px; }
-  .feat .d{ color:var(--muted); font-size:0.85rem; }
-  .faq{ max-width:700px; margin:0 auto; }
-  .qa{ border:1px solid #222; border-radius:12px; padding:16px 18px; margin-bottom:10px; background:#0d0d0d; }
-  .qa .q{ font-weight:800; margin-bottom:6px; }
-  .qa .a{ color:var(--muted); font-size:0.9rem; }
-  .final{ text-align:center; padding:52px 0; }
-  .cta.ghost{ display:inline-block; background:transparent; border:1px solid #333; color:#fff; font-weight:800; padding:14px 30px; border-radius:12px; }
-  .cta.ghost:hover{ border-color:#fff; }
-  footer{ text-align:center; color:var(--muted); font-size:0.78rem; padding:30px 0 50px; }
-  @media(max-width:560px){ h1{ font-size:2rem; } }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{background:#000;-webkit-font-smoothing:antialiased;}
+  a{color:inherit;text-decoration:none;}
+  ::selection{background:#F52C05;color:#fff;}
 </style>
 </head>
 <body>
-  <div class="wrap">
-    <div class="nav">
-      <div class="logo"><span class="fb">FB</span><span class="iq">IQ</span> <span style="color:var(--red);font-size:0.9rem;">Pro</span></div>
-      <a class="back" href="/">← Back to home</a>
-    </div>
+<div style="background:#000;color:rgba(255,255,255,.92);font-family:'Archivo',-apple-system,system-ui,sans-serif;line-height:1.5;min-height:100%;overflow-x:hidden;">
 
-    <div class="hero">
-      <div class="eyebrow">FBIQ Pro · Teams &amp; Organizations</div>
-      <h1>Build your whole team's <span class="accent">football IQ.</span></h1>
-      <p class="sub">One team account. Your playbook becomes question banks, your players learn your terminology, and you see who actually knows it — all from a coach dashboard.</p>
-    </div>
-
-    <div class="tiers">
-      <div class="tier">
-        <div class="badge" style="visibility:hidden;">Most popular</div>
-        <div class="name">Youth / Flag / 7v7</div>
-        <div class="who">Youth, flag, and 7-on-7 organizations</div>
-        <div class="amt">$199<span>/year</span></div>
-        <button class="buy" onclick="buyTeam('youth')">Get Started</button>
+  <div style="max-width:1040px;margin:0 auto;padding:0 24px;">
+    <nav style="display:flex;align-items:center;justify-content:space-between;padding:22px 0;">
+      <div style="font-family:'Archivo',sans-serif;font-weight:900;font-size:1.5rem;letter-spacing:-.01em;line-height:1;">
+        <span style="color:#3B82F6;">Vyzn</span><span style="color:#fff;">IQ</span><span style="font-weight:700;font-size:.4em;color:#fff;vertical-align:super;margin-left:2px;">™</span>
       </div>
-      <div class="tier pop">
-        <div class="badge">Most popular</div>
-        <div class="name">Middle School</div>
-        <div class="who">Middle school programs</div>
-        <div class="amt">$499<span>/year</span></div>
-        <button class="buy" onclick="buyTeam('ms')">Get Started</button>
-      </div>
-      <div class="tier">
-        <div class="badge" style="visibility:hidden;">Most popular</div>
-        <div class="name">High School / Org</div>
-        <div class="who">High school programs &amp; larger organizations</div>
-        <div class="amt">$999<span>/year</span></div>
-        <button class="buy" onclick="buyTeam('hs')">Get Started</button>
-      </div>
-    </div>
-    <div class="note">Pay online and your team is set up automatically — you'll get your team ID and coach login by email, ready to roll. Prefer a walkthrough first? <a href="/#contact" style="color:var(--red);">Book a demo</a>.</div>
+      <a href="/" style="color:rgba(255,255,255,.5);font-size:.82rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;" style-hover="color:#fff;">← Back to home</a>
+    </nav>
   </div>
 
-  <section>
-    <div class="wrap">
-      <h2>What your team gets</h2>
-      <div class="features">
-        <div class="feat"><div class="ic">📘</div><div class="t">Team Playbook</div><div class="d">Diagram your formations, plays, fronts, stunts, pressures, and coverages in your own terminology.</div></div>
-        <div class="feat"><div class="ic">🏦</div><div class="t">FBBank</div><div class="d">Drop in a playbook or install sheet and it becomes a real question bank — no manual writing.</div></div>
-        <div class="feat"><div class="ic">🎓</div><div class="t">FB Classroom</div><div class="d">Players study your banks through Learn, Quiz, Game, Test, and FBhoot.</div></div>
-        <div class="feat"><div class="ic">📝</div><div class="t">Coach-delivered Tests</div><div class="d">Assign tests; results come straight back to you, answer by answer.</div></div>
-        <div class="feat"><div class="ic">📊</div><div class="t">Player Analytics</div><div class="d">See who knows the install and who needs reps — per player, per topic.</div></div>
-        <div class="feat"><div class="ic">🛡️</div><div class="t">Coach Dashboard</div><div class="d">Add and manage your roster; players join by team ID — no codes to hand out.</div></div>
-        <div class="feat"><div class="ic">🎉</div><div class="t">FBhoot</div><div class="d">Kahoot-style team competitions on your own material — install week just got fun.</div></div>
-        <div class="feat"><div class="ic">🏈</div><div class="t">Full app for every player</div><div class="d">Everyone on the roster gets the complete FBIQ app — rules, positions, situations, and more.</div></div>
+  <!-- HERO -->
+  <header style="position:relative;overflow:hidden;text-align:center;padding:88px 24px 76px;border-bottom:1px solid rgba(255,255,255,.1);">
+    <div style="position:absolute;top:-340px;left:50%;transform:translateX(-50%);width:1200px;height:760px;pointer-events:none;background:radial-gradient(ellipse at center,rgba(245,44,5,.30),rgba(245,44,5,.06) 44%,transparent 70%);"></div>
+
+    <div style="position:relative;display:inline-block;font-size:.68rem;font-weight:900;letter-spacing:.24em;text-transform:uppercase;color:#F52C05;border:1px solid rgba(245,44,5,.45);border-radius:30px;padding:7px 16px;margin-bottom:26px;">Teams &amp; organizations</div>
+
+    <div style="position:relative;font-family:'Anton',Impact,sans-serif;letter-spacing:1px;line-height:.85;font-size:clamp(54px,12vw,116px);margin-bottom:12px;display:flex;align-items:baseline;justify-content:center;gap:.16em;flex-wrap:wrap;">
+      <span><span style="color:#F52C05;">FB</span><span style="color:#fff;">IQ</span></span><span style="color:#F52C05;font-size:.5em;letter-spacing:1px;">PRO</span>
+    </div>
+
+    <h1 style="position:relative;font-family:'Anton',Impact,sans-serif;font-size:clamp(38px,7.5vw,76px);line-height:.92;letter-spacing:.5px;text-transform:uppercase;text-wrap:balance;max-width:17ch;margin:0 auto 20px;">
+      Build your whole team's <span style="color:#F52C05;">football IQ.</span>
+    </h1>
+    <p style="position:relative;color:rgba(255,255,255,.62);font-size:clamp(1rem,2.4vw,1.18rem);max-width:58ch;margin:0 auto 44px;">One team account. Your playbook becomes question banks, your players learn your terminology, and you see who actually knows it — all from a coach dashboard.</p>
+
+    <!-- PRICING · 3 tiers -->
+    <div style="position:relative;display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;max-width:800px;margin:0 auto 22px;">
+      <div style="background:#0d0d0d;border:1px solid rgba(255,255,255,.14);border-radius:18px;padding:26px 24px 22px;text-align:left;display:flex;flex-direction:column;">
+        <div style="font-size:.68rem;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.45);margin-bottom:4px;">Youth / Flag / 7v7</div>
+        <div style="font-size:.78rem;color:rgba(255,255,255,.5);margin-bottom:14px;min-height:34px;">Youth, flag, and 7-on-7 organizations.</div>
+        <div style="font-family:'Anton',Impact,sans-serif;font-size:2.5rem;line-height:.9;">$199<span style="font-family:'Archivo';font-size:.3em;font-weight:600;color:rgba(255,255,255,.5);"> /yr</span></div>
+        <a href="https://buy.stripe.com/00weVcgP08Mt96AeNh5Ne06" style="display:block;margin-top:auto;padding-top:18px;"><span style="display:block;text-align:center;background:transparent;border:1px solid #333;color:#fff;font-weight:800;font-size:.95rem;padding:13px 0;border-radius:11px;" style-hover="border-color:#fff;">Get started →</span></a>
+      </div>
+
+      <div style="position:relative;background:#0d0d0d;border:1px solid #39FF14;border-radius:18px;padding:26px 24px 22px;text-align:left;display:flex;flex-direction:column;box-shadow:0 0 34px rgba(57,255,20,.16);">
+        <div style="position:absolute;top:-11px;left:50%;transform:translateX(-50%);background:#39FF14;color:#052b00;font-size:.58rem;font-weight:900;letter-spacing:.1em;text-transform:uppercase;padding:4px 12px;border-radius:20px;white-space:nowrap;">Most popular</div>
+        <div style="font-size:.68rem;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:#39FF14;margin-bottom:4px;">Middle School</div>
+        <div style="font-size:.78rem;color:rgba(255,255,255,.5);margin-bottom:14px;min-height:34px;">Middle school programs.</div>
+        <div style="font-family:'Anton',Impact,sans-serif;font-size:2.5rem;line-height:.9;">$499<span style="font-family:'Archivo';font-size:.3em;font-weight:600;color:rgba(255,255,255,.5);"> /yr</span></div>
+        <a href="https://buy.stripe.com/4gM00icyKfaR82w0Wr5Ne04" style="display:block;margin-top:auto;padding-top:18px;"><span style="display:block;text-align:center;background:#F52C05;color:#fff;font-weight:900;font-size:.95rem;padding:13px 0;border-radius:11px;box-shadow:0 10px 28px rgba(245,44,5,.28);" style-hover="background:#ff3d12;">Get started →</span></a>
+      </div>
+
+      <div style="background:#0d0d0d;border:1px solid rgba(255,255,255,.14);border-radius:18px;padding:26px 24px 22px;text-align:left;display:flex;flex-direction:column;">
+        <div style="font-size:.68rem;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.45);margin-bottom:4px;">High School / Org</div>
+        <div style="font-size:.78rem;color:rgba(255,255,255,.5);margin-bottom:14px;min-height:34px;">High school programs &amp; larger organizations.</div>
+        <div style="font-family:'Anton',Impact,sans-serif;font-size:2.5rem;line-height:.9;">$999<span style="font-family:'Archivo';font-size:.3em;font-weight:600;color:rgba(255,255,255,.5);"> /yr</span></div>
+        <a href="https://buy.stripe.com/8x2fZggP0e6NdmQgVp5Ne05" style="display:block;margin-top:auto;padding-top:18px;"><span style="display:block;text-align:center;background:transparent;border:1px solid #333;color:#fff;font-weight:800;font-size:.95rem;padding:13px 0;border-radius:11px;" style-hover="border-color:#fff;">Get started →</span></a>
+      </div>
+    </div>
+
+    <p style="position:relative;color:rgba(255,255,255,.5);font-size:.85rem;max-width:60ch;margin:0 auto;line-height:1.55;">Pay online and your team is set up automatically — you'll get your team ID and coach login by email, ready to roll. Prefer a walkthrough first? <a href="/#contact" style="color:#39FF14;font-weight:700;" style-hover="color:#4dff2b;">Book a demo →</a></p>
+  </header>
+
+  <!-- MANTRA BAND -->
+  <div style="border-bottom:1px solid rgba(255,255,255,.1);">
+    <div style="max-width:1040px;margin:0 auto;padding:34px 24px;display:flex;gap:16px;justify-content:center;flex-wrap:wrap;font-family:'Anton',Impact,sans-serif;font-size:clamp(20px,4vw,38px);letter-spacing:.06em;text-transform:uppercase;line-height:1;">
+      <span>Train the Brain.</span>
+      <span style="color:#39FF14;">Win the Game.</span>
+    </div>
+  </div>
+
+  <!-- WHAT YOUR TEAM GETS -->
+  <section style="max-width:1040px;margin:0 auto;padding:84px 24px 40px;">
+    <div style="font-family:'Anton',Impact,sans-serif;font-size:14px;letter-spacing:.32em;text-transform:uppercase;color:#39FF14;margin-bottom:10px;padding-left:.32em;text-align:center;">The coach's toolkit</div>
+    <h2 style="font-family:'Anton',Impact,sans-serif;font-size:clamp(30px,5.5vw,54px);letter-spacing:.5px;text-transform:uppercase;line-height:.95;text-align:center;margin-bottom:14px;">What your team gets.</h2>
+    <p style="color:rgba(255,255,255,.58);font-size:1.05rem;text-align:center;max-width:58ch;margin:0 auto 44px;">Your install, your terminology, your roster — turned into a measurable learning system you run from one dashboard.</p>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:14px;">
+      
+        <div style="background:#0d0d0d;border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:24px 22px;display:flex;flex-direction:column;gap:8px;" style-hover="border-color:rgba(245,44,5,.4);">
+          <div style="font-weight:900;font-size:1.04rem;">Team Playbook</div>
+          <div style="color:rgba(255,255,255,.55);font-size:.87rem;line-height:1.5;">Diagram your formations, plays, fronts, stunts, pressures, and coverages in your own terminology.</div>
+        </div>
+      
+
+        <div style="background:#0d0d0d;border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:24px 22px;display:flex;flex-direction:column;gap:8px;" style-hover="border-color:rgba(245,44,5,.4);">
+          <div style="font-weight:900;font-size:1.04rem;">FBBank</div>
+          <div style="color:rgba(255,255,255,.55);font-size:.87rem;line-height:1.5;">Drop in a playbook or install sheet and it becomes a real question bank — no manual writing.</div>
+        </div>
+      
+
+        <div style="background:#0d0d0d;border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:24px 22px;display:flex;flex-direction:column;gap:8px;" style-hover="border-color:rgba(245,44,5,.4);">
+          <div style="font-weight:900;font-size:1.04rem;">FB Classroom</div>
+          <div style="color:rgba(255,255,255,.55);font-size:.87rem;line-height:1.5;">Players study your banks through Learn, Quiz, Game, Test, and FBhoot.</div>
+        </div>
+      
+
+        <div style="background:#0d0d0d;border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:24px 22px;display:flex;flex-direction:column;gap:8px;" style-hover="border-color:rgba(245,44,5,.4);">
+          <div style="font-weight:900;font-size:1.04rem;">Coach-delivered Tests</div>
+          <div style="color:rgba(255,255,255,.55);font-size:.87rem;line-height:1.5;">Assign tests; results come straight back to you, answer by answer.</div>
+        </div>
+      
+
+        <div style="background:#0d0d0d;border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:24px 22px;display:flex;flex-direction:column;gap:8px;" style-hover="border-color:rgba(245,44,5,.4);">
+          <div style="font-weight:900;font-size:1.04rem;">Player Analytics</div>
+          <div style="color:rgba(255,255,255,.55);font-size:.87rem;line-height:1.5;">See who knows the install and who needs reps — per player, per topic.</div>
+        </div>
+      
+
+        <div style="background:#0d0d0d;border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:24px 22px;display:flex;flex-direction:column;gap:8px;" style-hover="border-color:rgba(245,44,5,.4);">
+          <div style="font-weight:900;font-size:1.04rem;">Coach Dashboard</div>
+          <div style="color:rgba(255,255,255,.55);font-size:.87rem;line-height:1.5;">Add and manage your roster; players join by team ID — no codes to hand out.</div>
+        </div>
+      
+
+        <div style="background:#0d0d0d;border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:24px 22px;display:flex;flex-direction:column;gap:8px;" style-hover="border-color:rgba(245,44,5,.4);">
+          <div style="font-weight:900;font-size:1.04rem;">FBhoot</div>
+          <div style="color:rgba(255,255,255,.55);font-size:.87rem;line-height:1.5;">Kahoot-style team competitions on your own material — install week just got fun.</div>
+        </div>
+      
+
+        <div style="background:#0d0d0d;border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:24px 22px;display:flex;flex-direction:column;gap:8px;" style-hover="border-color:rgba(245,44,5,.4);">
+          <div style="font-weight:900;font-size:1.04rem;">Full app for every player</div>
+          <div style="color:rgba(255,255,255,.55);font-size:.87rem;line-height:1.5;">Everyone on the roster gets the complete FBIQ app — rules, positions, situations, and more.</div>
+        </div>
+      
+    </div>
+  </section>
+
+  <!-- FBCAT HIGHLIGHT -->
+  <section style="max-width:1040px;margin:0 auto;padding:64px 24px 40px;">
+    <div style="background:radial-gradient(ellipse at 20% 0%,rgba(245,44,5,.14),transparent 58%),#0d0d0d;border:1px solid rgba(255,255,255,.12);border-radius:22px;padding:clamp(32px,5vw,52px);">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:center;">
+        <div style="min-width:260px;">
+          <div style="font-family:'Anton',Impact,sans-serif;font-size:13px;letter-spacing:.3em;text-transform:uppercase;color:#39FF14;margin-bottom:12px;">FBCat · AI Question Generator</div>
+          <h2 style="font-family:'Anton',Impact,sans-serif;font-size:clamp(28px,4.5vw,44px);letter-spacing:.5px;text-transform:uppercase;line-height:.95;margin-bottom:16px;">Your playbook becomes a quiz in seconds.</h2>
+          <p style="color:rgba(255,255,255,.6);font-size:.98rem;line-height:1.6;">Paste in scheme notes, install sheets, or scouting reports — or upload a PDF — and FBCat generates a custom, fully-editable question set built on your own material. Publish to the team and every player sees it instantly.</p>
+        </div>
+        <div style="min-width:240px;display:flex;flex-direction:column;gap:11px;">
+          
+            <div style="display:flex;gap:11px;font-size:.92rem;color:rgba(255,255,255,.82);line-height:1.4;background:#000;border:1px solid rgba(255,255,255,.1);border-radius:11px;padding:14px 16px;"><span style="color:#39FF14;font-weight:900;flex:0 0 auto;">→</span><span>Paste any text or upload a PDF</span></div>
+          
+
+            <div style="display:flex;gap:11px;font-size:.92rem;color:rgba(255,255,255,.82);line-height:1.4;background:#000;border:1px solid rgba(255,255,255,.1);border-radius:11px;padding:14px 16px;"><span style="color:#39FF14;font-weight:900;flex:0 0 auto;">→</span><span>AI generates 5–100 multiple-choice questions</span></div>
+          
+
+            <div style="display:flex;gap:11px;font-size:.92rem;color:rgba(255,255,255,.82);line-height:1.4;background:#000;border:1px solid rgba(255,255,255,.1);border-radius:11px;padding:14px 16px;"><span style="color:#39FF14;font-weight:900;flex:0 0 auto;">→</span><span>Organized by Game Plan, Scheme, or Scout</span></div>
+          
+
+            <div style="display:flex;gap:11px;font-size:.92rem;color:rgba(255,255,255,.82);line-height:1.4;background:#000;border:1px solid rgba(255,255,255,.1);border-radius:11px;padding:14px 16px;"><span style="color:#39FF14;font-weight:900;flex:0 0 auto;">→</span><span>Offense / defense categorization</span></div>
+          
+
+            <div style="display:flex;gap:11px;font-size:.92rem;color:rgba(255,255,255,.82);line-height:1.4;background:#000;border:1px solid rgba(255,255,255,.1);border-radius:11px;padding:14px 16px;"><span style="color:#39FF14;font-weight:900;flex:0 0 auto;">→</span><span>Edit, remove, or add questions before saving</span></div>
+          
+
+            <div style="display:flex;gap:11px;font-size:.92rem;color:rgba(255,255,255,.82);line-height:1.4;background:#000;border:1px solid rgba(255,255,255,.1);border-radius:11px;padding:14px 16px;"><span style="color:#39FF14;font-weight:900;flex:0 0 auto;">→</span><span>Saved to the team — every player sees it instantly</span></div>
+          
+        </div>
       </div>
     </div>
   </section>
 
-  <section>
-    <div class="wrap faq">
-      <h2>Questions</h2>
-      <div class="qa"><div class="q">How does my team get set up?</div><div class="a">Pick your tier and pay online. Your team is created automatically — you'll get an email with your <strong>team ID</strong> and <strong>coach login</strong>. Log in and you're ready to add your roster the same day.</div></div>
-      <div class="qa"><div class="q">How do players join?</div><div class="a">You add them from your coach dashboard and they're linked to your team ID automatically — no codes for players to type in.</div></div>
-      <div class="qa"><div class="q">Which tier do I need?</div><div class="a">Youth/Flag/7v7 for youth organizations, Middle School for MS programs, and High School/Org for high school programs and larger organizations.</div></div>
-      <div class="qa"><div class="q">Can we see it first?</div><div class="a">Absolutely — <a href="/#contact" style="color:var(--red);">book a demo</a> and we'll walk your staff through it before you buy.</div></div>
-      <div class="qa"><div class="q">Is there training?</div><div class="a">Yes. Once you're set up we reach out to help you get your playbook loaded and your team rolling.</div></div>
+  <!-- ADMIN HIERARCHY -->
+  <section style="max-width:1040px;margin:0 auto;padding:64px 24px 40px;">
+    <h2 style="font-family:'Anton',Impact,sans-serif;font-size:clamp(28px,5vw,48px);letter-spacing:.5px;text-transform:uppercase;line-height:.95;text-align:center;margin-bottom:12px;">Built for the whole program.</h2>
+    <p style="color:rgba(255,255,255,.58);font-size:1.02rem;text-align:center;max-width:54ch;margin:0 auto 40px;">A three-tier hierarchy keeps control where it belongs — from the org down to the player.</p>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px;">
+      
+        <div style="background:#0d0d0d;border:1px solid rgba(255,255,255,.1);border-radius:16px;padding:28px 24px;display:flex;flex-direction:column;gap:10px;">
+          <div style="font-family:'Anton',Impact,sans-serif;font-size:1.5rem;letter-spacing:.5px;text-transform:uppercase;color:#F52C05;">Super Admin</div>
+          <div style="color:rgba(255,255,255,.58);font-size:.9rem;line-height:1.5;">Full platform control. Manages all teams, questions, and settings, and assigns Team Admin credentials.</div>
+        </div>
+      
+
+        <div style="background:#0d0d0d;border:1px solid rgba(255,255,255,.1);border-radius:16px;padding:28px 24px;display:flex;flex-direction:column;gap:10px;">
+          <div style="font-family:'Anton',Impact,sans-serif;font-size:1.5rem;letter-spacing:.5px;text-transform:uppercase;color:#F52C05;">Team Admin</div>
+          <div style="color:rgba(255,255,255,.58);font-size:.9rem;line-height:1.5;">Controls the team roster, FBCats, defaults, and colors. Delivers tests and hosts FBhoot sessions.</div>
+        </div>
+      
+
+        <div style="background:#0d0d0d;border:1px solid rgba(255,255,255,.1);border-radius:16px;padding:28px 24px;display:flex;flex-direction:column;gap:10px;">
+          <div style="font-family:'Anton',Impact,sans-serif;font-size:1.5rem;letter-spacing:.5px;text-transform:uppercase;color:#F52C05;">Player</div>
+          <div style="color:rgba(255,255,255,.58);font-size:.9rem;line-height:1.5;">Receives the team code, plays every mode, earns XP, and accesses team FBCats and tests.</div>
+        </div>
+      
     </div>
   </section>
 
-  <div class="final wrap">
-    <h2 style="margin-bottom:10px;">Get your program dialed in.</h2>
-    <p class="sub" style="margin-bottom:22px;">Set up in minutes, ready the same day.</p>
-    <a class="cta ghost" href="/#contact">Book a Demo</a>
-  </div>
+  <!-- TEACHING MODES -->
+  <section style="max-width:1040px;margin:0 auto;padding:64px 24px 40px;">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+      
+        <div style="background:#0d0d0d;border:1px solid rgba(255,255,255,.1);border-radius:18px;padding:clamp(28px,4vw,40px);display:flex;flex-direction:column;">
+          <div style="font-size:.6rem;font-weight:900;letter-spacing:.14em;text-transform:uppercase;color:#39FF14;border:1px solid rgba(57,255,20,.35);border-radius:20px;padding:4px 10px;align-self:flex-start;margin-bottom:16px;">Pro</div>
+          <h3 style="font-family:'Anton',Impact,sans-serif;font-size:clamp(24px,3.4vw,34px);letter-spacing:.5px;text-transform:uppercase;line-height:.95;margin-bottom:12px;">Test Mode</h3>
+          <p style="color:rgba(255,255,255,.6);font-size:.95rem;line-height:1.6;margin-bottom:18px;">Formal, timed testing for teams and classrooms. Answers lock in — no feedback until the test is complete — built for evaluating what players actually know.</p>
+          <ul style="list-style:none;display:flex;flex-direction:column;gap:9px;margin-top:auto;">
+            
+              <li style="display:flex;gap:10px;font-size:.87rem;color:rgba(255,255,255,.8);line-height:1.4;"><span style="color:#F52C05;font-weight:900;flex:0 0 auto;">→</span><span>No hints or explanations during the test</span></li>
+            
 
-  <footer>
-    <div class="wrap"><span class="logo" style="font-size:1rem;"><span class="fb">FB</span><span class="iq">IQ</span></span> · a VYZNIQ app · <a href="/" style="color:var(--muted);">vyzniq.com</a></div>
+              <li style="display:flex;gap:10px;font-size:.87rem;color:rgba(255,255,255,.8);line-height:1.4;"><span style="color:#F52C05;font-weight:900;flex:0 0 auto;">→</span><span>Timed per question with auto-advance</span></li>
+            
+
+              <li style="display:flex;gap:10px;font-size:.87rem;color:rgba(255,255,255,.8);line-height:1.4;"><span style="color:#F52C05;font-weight:900;flex:0 0 auto;">→</span><span>Full results summary at completion</span></li>
+            
+
+              <li style="display:flex;gap:10px;font-size:.87rem;color:rgba(255,255,255,.8);line-height:1.4;"><span style="color:#F52C05;font-weight:900;flex:0 0 auto;">→</span><span>Ideal for laptop / Chromebook classrooms</span></li>
+            
+          </ul>
+        </div>
+      
+
+        <div style="background:#0d0d0d;border:1px solid rgba(255,255,255,.1);border-radius:18px;padding:clamp(28px,4vw,40px);display:flex;flex-direction:column;">
+          <div style="font-size:.6rem;font-weight:900;letter-spacing:.14em;text-transform:uppercase;color:#39FF14;border:1px solid rgba(57,255,20,.35);border-radius:20px;padding:4px 10px;align-self:flex-start;margin-bottom:16px;">Pro</div>
+          <h3 style="font-family:'Anton',Impact,sans-serif;font-size:clamp(24px,3.4vw,34px);letter-spacing:.5px;text-transform:uppercase;line-height:.95;margin-bottom:12px;">FBhoot — Live Multiplayer</h3>
+          <p style="color:rgba(255,255,255,.6);font-size:.95rem;line-height:1.6;margin-bottom:18px;">Real-time group quiz sessions where a coach hosts and players join from any device. Kahoot-style — built entirely around football.</p>
+          <ul style="list-style:none;display:flex;flex-direction:column;gap:9px;margin-top:auto;">
+            
+              <li style="display:flex;gap:10px;font-size:.87rem;color:rgba(255,255,255,.8);line-height:1.4;"><span style="color:#F52C05;font-weight:900;flex:0 0 auto;">→</span><span>Coach generates a room code; players join instantly</span></li>
+            
+
+              <li style="display:flex;gap:10px;font-size:.87rem;color:rgba(255,255,255,.8);line-height:1.4;"><span style="color:#F52C05;font-weight:900;flex:0 0 auto;">→</span><span>Everyone sees the same question at once</span></li>
+            
+
+              <li style="display:flex;gap:10px;font-size:.87rem;color:rgba(255,255,255,.8);line-height:1.4;"><span style="color:#F52C05;font-weight:900;flex:0 0 auto;">→</span><span>Live leaderboard updates as players answer</span></li>
+            
+
+              <li style="display:flex;gap:10px;font-size:.87rem;color:rgba(255,255,255,.8);line-height:1.4;"><span style="color:#F52C05;font-weight:900;flex:0 0 auto;">→</span><span>Works on phones, tablets, Chromebooks & laptops at once</span></li>
+            
+          </ul>
+        </div>
+      
+    </div>
+  </section>
+
+  <!-- FULL APP FOR EVERY PLAYER -->
+  <section style="max-width:1040px;margin:0 auto;padding:64px 24px 40px;">
+    <div style="text-align:center;margin-bottom:40px;">
+      <div style="display:inline-block;font-size:.66rem;font-weight:900;letter-spacing:.16em;text-transform:uppercase;color:#F52C05;border:1px solid rgba(245,44,5,.4);border-radius:30px;padding:6px 14px;margin-bottom:16px;">Every roster spot included</div>
+      <h2 style="font-family:'Anton',Impact,sans-serif;font-size:clamp(28px,5vw,48px);letter-spacing:.5px;text-transform:uppercase;line-height:.95;margin-bottom:14px;">Every player gets the full app.</h2>
+      <p style="color:rgba(255,255,255,.6);font-size:1.02rem;max-width:58ch;margin:0 auto;">Beyond your team banks, every player on the roster gets the complete FBIQ learning system — every rule set, no XP gates.</p>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;">
+      
+        <div style="background:#0d0d0d;border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:22px 22px;display:flex;flex-direction:column;gap:7px;" style-hover="border-color:rgba(245,44,5,.4);">
+          <div style="font-weight:900;font-size:1.02rem;">NCAA Rules</div>
+          <div style="color:rgba(255,255,255,.52);font-size:.85rem;line-height:1.45;">College rules across every category — officiating, penalties, formations.</div>
+        </div>
+      
+
+        <div style="background:#0d0d0d;border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:22px 22px;display:flex;flex-direction:column;gap:7px;" style-hover="border-color:rgba(245,44,5,.4);">
+          <div style="font-weight:900;font-size:1.02rem;">NFL Rules</div>
+          <div style="color:rgba(255,255,255,.52);font-size:.85rem;line-height:1.45;">Pro rules and procedures. Penalty specifics, scoring, and replay.</div>
+        </div>
+      
+
+        <div style="background:#0d0d0d;border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:22px 22px;display:flex;flex-direction:column;gap:7px;" style-hover="border-color:rgba(245,44,5,.4);">
+          <div style="font-weight:900;font-size:1.02rem;">NFHS Rules</div>
+          <div style="color:rgba(255,255,255,.52);font-size:.85rem;line-height:1.45;">High school rules for players and officials under the National Federation rulebook.</div>
+        </div>
+      
+
+        <div style="background:#0d0d0d;border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:22px 22px;display:flex;flex-direction:column;gap:7px;" style-hover="border-color:rgba(245,44,5,.4);">
+          <div style="font-weight:900;font-size:1.02rem;">Texas HS (UIL)</div>
+          <div style="color:rgba(255,255,255,.52);font-size:.85rem;line-height:1.45;">Texas-specific high school rules and procedures under the UIL framework.</div>
+        </div>
+      
+
+        <div style="background:#0d0d0d;border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:22px 22px;display:flex;flex-direction:column;gap:7px;" style-hover="border-color:rgba(245,44,5,.4);">
+          <div style="font-weight:900;font-size:1.02rem;">Terminology</div>
+          <div style="color:rgba(255,255,255,.52);font-size:.85rem;line-height:1.45;">Universal football terms, definitions, and concepts for any level.</div>
+        </div>
+      
+
+        <div style="background:#0d0d0d;border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:22px 22px;display:flex;flex-direction:column;gap:7px;" style-hover="border-color:rgba(245,44,5,.4);">
+          <div style="font-weight:900;font-size:1.02rem;">Situations</div>
+          <div style="color:rgba(255,255,255,.52);font-size:.85rem;line-height:1.45;">Role-specific situational questions for players, coaches, officials, and fans.</div>
+        </div>
+      
+
+        <div style="background:#0d0d0d;border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:22px 22px;display:flex;flex-direction:column;gap:7px;" style-hover="border-color:rgba(245,44,5,.4);">
+          <div style="font-weight:900;font-size:1.02rem;">Position Knowledge</div>
+          <div style="color:rgba(255,255,255,.52);font-size:.85rem;line-height:1.45;">Deep-dive tracks for all 10 positions plus coordinator roles.</div>
+        </div>
+      
+
+        <div style="background:#0d0d0d;border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:22px 22px;display:flex;flex-direction:column;gap:7px;" style-hover="border-color:rgba(245,44,5,.4);">
+          <div style="font-weight:900;font-size:1.02rem;">Trivia</div>
+          <div style="color:rgba(255,255,255,.52);font-size:.85rem;line-height:1.45;">NCAA and NFL history, records, players, and game knowledge.</div>
+        </div>
+      
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section style="max-width:740px;margin:0 auto;padding:40px 24px 40px;">
+    <h2 style="font-family:'Anton',Impact,sans-serif;font-size:clamp(28px,5vw,44px);letter-spacing:.5px;text-transform:uppercase;line-height:.95;text-align:center;margin-bottom:32px;">Questions</h2>
+    <div style="display:flex;flex-direction:column;gap:12px;">
+      
+        <div style="background:#0d0d0d;border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:20px 22px;">
+          <div style="font-weight:800;font-size:1rem;margin-bottom:8px;">How does my team get set up?</div>
+          <div style="color:rgba(255,255,255,.58);font-size:.92rem;line-height:1.55;">Pick your tier and pay online. Your team is created automatically — you get an email with your team ID and coach login. Log in and you can add your roster the same day.</div>
+        </div>
+      
+
+        <div style="background:#0d0d0d;border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:20px 22px;">
+          <div style="font-weight:800;font-size:1rem;margin-bottom:8px;">How do players join?</div>
+          <div style="color:rgba(255,255,255,.58);font-size:.92rem;line-height:1.55;">You add them from your coach dashboard and they are linked to your team ID automatically — no codes for players to type in.</div>
+        </div>
+      
+
+        <div style="background:#0d0d0d;border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:20px 22px;">
+          <div style="font-weight:800;font-size:1rem;margin-bottom:8px;">Which tier do I need?</div>
+          <div style="color:rgba(255,255,255,.58);font-size:.92rem;line-height:1.55;">Youth/Flag/7v7 for youth organizations, Middle School for MS programs, and High School/Org for high school programs and larger organizations.</div>
+        </div>
+      
+
+        <div style="background:#0d0d0d;border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:20px 22px;">
+          <div style="font-weight:800;font-size:1rem;margin-bottom:8px;">Can we see it first?</div>
+          <div style="color:rgba(255,255,255,.58);font-size:.92rem;line-height:1.55;">Absolutely — book a demo and we will walk your staff through it before you buy.</div>
+        </div>
+      
+
+        <div style="background:#0d0d0d;border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:20px 22px;">
+          <div style="font-weight:800;font-size:1rem;margin-bottom:8px;">Is there training?</div>
+          <div style="color:rgba(255,255,255,.58);font-size:.92rem;line-height:1.55;">Yes. Once you are set up we reach out to help you get your playbook loaded and your team rolling.</div>
+        </div>
+      
+    </div>
+  </section>
+
+  <!-- FINAL CTA -->
+  <section style="position:relative;overflow:hidden;text-align:center;padding:88px 24px 96px;border-top:1px solid rgba(255,255,255,.1);">
+    <div style="position:absolute;bottom:-380px;left:50%;transform:translateX(-50%);width:1100px;height:760px;pointer-events:none;background:radial-gradient(ellipse at center,rgba(245,44,5,.24),rgba(245,44,5,.05) 44%,transparent 70%);"></div>
+    <h2 style="position:relative;font-family:'Anton',Impact,sans-serif;font-size:clamp(38px,7.5vw,74px);letter-spacing:.5px;text-transform:uppercase;line-height:.9;margin-bottom:16px;">Get your program <span style="color:#F52C05;">dialed in.</span></h2>
+    <p style="position:relative;color:rgba(255,255,255,.62);font-size:1.08rem;max-width:46ch;margin:0 auto 36px;">Set up in minutes, ready the same day. Prefer to see it first? We'll walk your staff through it.</p>
+    <div style="position:relative;display:flex;gap:14px;justify-content:center;flex-wrap:wrap;">
+      <a href="https://buy.stripe.com/4gM00icyKfaR82w0Wr5Ne04" style="display:inline-block;background:#F52C05;color:#fff;font-weight:900;font-size:1.05rem;padding:16px 34px;border-radius:12px;letter-spacing:.02em;box-shadow:0 12px 34px rgba(245,44,5,.32);" style-hover="background:#ff3d12;">Get started</a>
+      <a href="/#contact" style="display:inline-block;background:transparent;border:1px solid #39FF14;color:#39FF14;font-weight:800;font-size:1.05rem;padding:16px 30px;border-radius:12px;letter-spacing:.02em;" style-hover="background:#39FF14;color:#052b00;">Book a demo →</a>
+    </div>
+  </section>
+
+  <footer style="border-top:1px solid rgba(255,255,255,.1);text-align:center;padding:30px 24px 50px;color:rgba(255,255,255,.4);font-size:.8rem;letter-spacing:.04em;">
+    <span style="font-family:'Anton',Impact,sans-serif;font-size:1rem;letter-spacing:1px;"><span style="color:#F52C05;">FB</span><span style="color:#fff;">IQ</span></span> · a <span style="font-weight:900;color:#fff;">Vyzn<span style="color:#fff;">IQ</span></span> app · <a href="/" style="color:rgba(255,255,255,.55);" style-hover="color:#fff;">vyzniq.com</a>
   </footer>
 
+  
+
+</div>
 <script>
-  // Team Stripe Payment Links (live, 2026-07-14). Pay-first: coach pays ->
-  // Stripe redirects to fbiq.app to set up -> team is provisioned by email.
-  // Empty string would fall back to Book-a-Demo (nothing dead-ends).
-  var TEAM_LINKS = {
-    youth: "https://buy.stripe.com/00weVcgP08Mt96AeNh5Ne06", // Pro Youth/Flag/7on7 $199.99/yr
-    ms:    "https://buy.stripe.com/4gM00icyKfaR82w0Wr5Ne04", // Pro MS $499/yr
-    hs:    "https://buy.stripe.com/8x2fZggP0e6NdmQgVp5Ne05", // Pro HS $999.99/yr
-  };
-  function buyTeam(tier){
-    var url = TEAM_LINKS[tier];
-    if (url) { window.location.href = url; return; }
-    // Not connected yet -> send them to the demo/contact section on the homepage.
-    window.location.href = "/#contact";
-  }
+document.querySelectorAll('[style-hover]').forEach(function(el){
+  var base=el.getAttribute('style')||'';
+  var hov=el.getAttribute('style-hover');
+  el.addEventListener('mouseenter',function(){el.setAttribute('style',base+';'+hov);});
+  el.addEventListener('mouseleave',function(){el.setAttribute('style',base);});
+});
 </script>
 </body>
 </html>

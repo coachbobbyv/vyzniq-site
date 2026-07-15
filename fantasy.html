@@ -1,155 +1,348 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>FBIQ Fantasy — Win Your League with Football IQ</title>
-<meta name="description" content="FBIQ Fantasy: draft strategy, start/sit calls, waiver wire, matchups and more — gamified with XP and rewards. $4.99/mo, $39.99/yr, or $99.99/yr for your whole league.">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>FBIQ Fantasy — Win Your League</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <style>
-  :root{ --red:#F52C05; --orange:#FFA602; --green:#39FF14; --muted:rgba(255,255,255,0.55); }
-  *{ margin:0; padding:0; box-sizing:border-box; }
-  body{ background:#0a0a0a; color:#fff; font-family:'Archivo',sans-serif; line-height:1.5; -webkit-font-smoothing:antialiased; }
-  a{ color:inherit; text-decoration:none; }
-  .wrap{ max-width:980px; margin:0 auto; padding:0 20px; }
-  .nav{ display:flex; align-items:center; justify-content:space-between; padding:18px 0; }
-  .logo{ font-weight:900; font-size:1.4rem; letter-spacing:0.5px; }
-  .logo .fb{ color:var(--red); } .logo .iq{ color:#fff; } .logo .fan{ color:var(--green); font-size:0.95rem; }
-  .nav a.back{ color:var(--muted); font-size:0.85rem; font-weight:700; }
-  .hero{ text-align:center; padding:52px 0 8px; }
-  .eyebrow{ color:var(--green); font-weight:900; letter-spacing:3px; font-size:0.72rem; text-transform:uppercase; margin-bottom:14px; }
-  h1{ font-size:2.7rem; font-weight:900; line-height:1.04; letter-spacing:-0.5px; margin-bottom:14px; }
-  h1 .accent{ color:var(--green); }
-  .sub{ color:var(--muted); font-size:1.05rem; max-width:600px; margin:0 auto 4px; }
-
-  /* Pricing */
-  .plans{ display:grid; grid-template-columns:repeat(3, 1fr); gap:16px; padding:34px 0 8px; }
-  .plan{ background:#0d0d0d; border:1px solid #262626; border-radius:18px; padding:26px 22px; display:flex; flex-direction:column; text-align:center; position:relative; }
-  .plan.best{ border-color:var(--green); box-shadow:0 0 28px rgba(57,255,20,0.16); }
-  .badge{ position:absolute; top:-11px; left:50%; transform:translateX(-50%); background:var(--green); color:#052b00; font-weight:900; font-size:0.62rem; letter-spacing:1px; text-transform:uppercase; padding:4px 12px; border-radius:999px; white-space:nowrap; }
-  .plan .name{ font-weight:900; font-size:1.05rem; margin-bottom:4px; }
-  .plan .who{ color:var(--muted); font-size:0.78rem; min-height:34px; margin-bottom:10px; }
-  .plan .amt{ font-size:2.3rem; font-weight:900; line-height:1; }
-  .plan .amt span{ font-size:0.85rem; font-weight:500; color:var(--muted); }
-  .plan .sm{ color:var(--muted); font-size:0.75rem; margin-top:6px; min-height:18px; }
-  .buy{ display:block; margin-top:18px; background:var(--red); color:#fff; font-weight:800; font-size:0.98rem; padding:14px; border-radius:12px; transition:transform .1s, background .15s; }
-  .buy:hover{ transform:translateY(-2px); background:#ff3d12; }
-  .plan.best .buy{ background:var(--green); color:#052b00; }
-  .plan.best .buy:hover{ background:#5dff3a; }
-  .note{ color:var(--muted); font-size:0.8rem; margin-top:18px; text-align:center; }
-  .freeline{ text-align:center; margin-top:10px; }
-  .freeline a{ color:var(--muted); font-size:0.85rem; font-weight:700; border-bottom:1px solid rgba(255,255,255,0.2); padding-bottom:1px; }
-
-  section{ padding:44px 0; border-top:1px solid rgba(255,255,255,0.07); }
-  h2{ font-size:1.5rem; font-weight:900; margin-bottom:22px; text-align:center; }
-  .features{ display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:14px; }
-  .feat{ background:#0d0d0d; border:1px solid #222; border-radius:14px; padding:18px; }
-  .feat .ic{ font-size:1.4rem; margin-bottom:8px; }
-  .feat .t{ font-weight:800; margin-bottom:4px; }
-  .feat .d{ color:var(--muted); font-size:0.85rem; }
-  .faq{ max-width:680px; margin:0 auto; }
-  .qa{ border:1px solid #222; border-radius:12px; padding:16px 18px; margin-bottom:10px; background:#0d0d0d; }
-  .qa .q{ font-weight:800; margin-bottom:6px; }
-  .qa .a{ color:var(--muted); font-size:0.9rem; }
-  footer{ text-align:center; color:var(--muted); font-size:0.78rem; padding:30px 0 50px; }
-  @media(max-width:720px){ .plans{ grid-template-columns:1fr; } h1{ font-size:2.1rem; } .plan.best{ order:-1; } }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{background:#000;-webkit-font-smoothing:antialiased;}
+  a{color:inherit;text-decoration:none;}
+  ::selection{background:#F52C05;color:#fff;}
 </style>
 </head>
 <body>
-  <div class="wrap">
-    <div class="nav">
-      <div class="logo"><span class="fb">FB</span><span class="iq">IQ</span> <span class="fan">fantasy</span></div>
-      <a class="back" href="/">← vyzniq.com</a>
-    </div>
+<div style="background:#000;color:rgba(255,255,255,.92);font-family:'Archivo',-apple-system,system-ui,sans-serif;line-height:1.5;min-height:100%;overflow-x:hidden;">
 
-    <div class="hero">
-      <div class="eyebrow">FBIQ Fantasy</div>
-      <h1>Win your league with <span class="accent">real football IQ.</span></h1>
-      <p class="sub">Draft strategy, start/sit calls, waiver wire, matchups, trades — a whole learning system built for fantasy, gamified with XP and rewards. Stop guessing. Start knowing.</p>
-    </div>
-
-    <!-- Three tiers. Each button goes straight to its Stripe checkout. After
-         paying, Stripe sends the buyer to fbiq.app to set up their account,
-         and the plan unlocks automatically (matched by their email). -->
-    <div class="plans">
-      <div class="plan">
-        <div class="name">Monthly</div>
-        <div class="who">Try it out, cancel anytime.</div>
-        <div class="amt">$4.99<span>/mo</span></div>
-        <div class="sm">Billed monthly</div>
-        <a class="buy" href="https://buy.stripe.com/9B6aEW1U6aUBbeI5cH5Ne01">Get Fantasy →</a>
+  <div style="max-width:1040px;margin:0 auto;padding:0 24px;">
+    <nav style="display:flex;align-items:center;justify-content:space-between;padding:22px 0;">
+      <div style="font-family:'Archivo',sans-serif;font-weight:900;font-size:1.5rem;letter-spacing:-.01em;line-height:1;">
+        <span style="color:#3B82F6;">Vyzn</span><span style="color:#fff;">IQ</span><span style="font-weight:700;font-size:.4em;color:#fff;vertical-align:super;margin-left:2px;">™</span>
       </div>
-
-      <div class="plan best">
-        <div class="badge">Best Value · Save 33%</div>
-        <div class="name">Yearly</div>
-        <div class="who">Full season, one payment.</div>
-        <div class="amt">$39.99<span>/yr</span></div>
-        <div class="sm">~$3.33/mo</div>
-        <a class="buy" href="https://buy.stripe.com/7sYeVc9my9QxeqUeNh5Ne00">Get Fantasy →</a>
-      </div>
-
-      <div class="plan">
-        <div class="name">League / Team</div>
-        <div class="who">Bring your whole league along.</div>
-        <div class="amt">$99.99<span>/yr</span></div>
-        <div class="sm">One price for the group</div>
-        <a class="buy" href="https://buy.stripe.com/6oUbJ02Ya1k1fuY9sX5Ne07">Get the League →</a>
-      </div>
-    </div>
-
-    <div class="note">After you pay, we'll email you to finish setting up your account — use that same email and your subscription unlocks automatically. Cancel anytime; you keep access through the end of your billing period.</div>
-    <div class="freeline"><a href="https://fbiq.app/play">Just want to play free trivia first? →</a></div>
+      <a href="/" style="color:rgba(255,255,255,.5);font-size:.82rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;" style-hover="color:#fff;">← vyzniq.com</a>
+    </nav>
   </div>
 
-  <section>
-    <div class="wrap">
-      <h2>What you get</h2>
-      <div class="features">
-        <div class="feat"><div class="ic">🏆</div><div class="t">Draft Strategy</div><div class="d">ADP, value picks, positional tiers, Zero-RB, superflex, dynasty — draft like you've done it a hundred times.</div></div>
-        <div class="feat"><div class="ic">🎯</div><div class="t">Start / Sit Decisions</div><div class="d">Matchups, floor vs. ceiling, target share, weather, Vegas — make the right call every week.</div></div>
-        <div class="feat"><div class="ic">📈</div><div class="t">Waiver Wire & FAAB</div><div class="d">Budget your FAAB, time your claims, and find the streamers and stashes before your league does.</div></div>
-        <div class="feat"><div class="ic">🔄</div><div class="t">Trade Evaluation</div><div class="d">Know a fair deal from a fleece — buy low, sell high, and negotiate with leverage.</div></div>
-        <div class="feat"><div class="ic">🛡️</div><div class="t">Streaming Positions</div><div class="d">QB, TE, D/ST, kicker — when to stream, who to target, and how to squeeze out points.</div></div>
-        <div class="feat"><div class="ic">⚡</div><div class="t">Gamified Learning</div><div class="d">Earn XP, level up, collect cards, and climb the leaderboard while you get sharper.</div></div>
+  <!-- HERO -->
+  <header style="position:relative;overflow:hidden;text-align:center;padding:88px 24px 76px;border-bottom:1px solid rgba(255,255,255,.1);">
+    <div style="position:absolute;top:-340px;left:50%;transform:translateX(-50%);width:1200px;height:760px;pointer-events:none;background:radial-gradient(ellipse at center,rgba(245,44,5,.30),rgba(245,44,5,.06) 44%,transparent 70%);"></div>
+
+    <div style="position:relative;display:inline-block;font-size:.68rem;font-weight:900;letter-spacing:.24em;text-transform:uppercase;color:#39FF14;border:1px solid rgba(57,255,20,.4);border-radius:30px;padding:7px 16px;margin-bottom:26px;">Win your league with real IQ</div>
+
+    <div style="position:relative;font-family:'Anton',Impact,sans-serif;letter-spacing:1px;line-height:.85;font-size:clamp(50px,11vw,110px);margin-bottom:10px;">
+      <span style="color:#F52C05;">FB</span><span style="color:#fff;">IQ</span><span style="color:#39FF14;font-size:.5em;margin-left:2px;text-shadow:0 0 8px rgba(57,255,20,.85),0 0 22px rgba(57,255,20,.5);">fantasy</span>
+    </div>
+
+    <h1 style="position:relative;font-family:'Anton',Impact,sans-serif;font-size:clamp(40px,8vw,80px);line-height:.92;letter-spacing:.5px;text-transform:uppercase;text-wrap:balance;max-width:16ch;margin:0 auto 20px;">
+      Win your league with <span style="color:#39FF14;">real football IQ.</span>
+    </h1>
+    <p style="position:relative;color:rgba(255,255,255,.62);font-size:clamp(1rem,2.4vw,1.18rem);max-width:56ch;margin:0 auto 44px;">Draft strategy, start/sit calls, the waiver wire, matchups, trades — a whole learning system built for fantasy and gamified with XP. Stop guessing. Start knowing.</p>
+
+    <!-- PRICING · 3 tiers -->
+    <div style="position:relative;display:grid;grid-template-columns:repeat(auto-fit,minmax(215px,1fr));gap:16px;max-width:760px;margin:0 auto 24px;">
+      <div style="background:#0d0d0d;border:1px solid rgba(255,255,255,.14);border-radius:18px;padding:26px 24px 22px;text-align:left;display:flex;flex-direction:column;">
+        <div style="font-size:.68rem;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.45);margin-bottom:4px;">Monthly</div>
+        <div style="font-size:.78rem;color:rgba(255,255,255,.5);margin-bottom:14px;min-height:34px;">Try it out, cancel anytime.</div>
+        <div style="font-family:'Anton',Impact,sans-serif;font-size:2.5rem;line-height:.9;">$4.99<span style="font-family:'Archivo';font-size:.3em;font-weight:600;color:rgba(255,255,255,.5);"> /mo</span></div>
+        <div style="font-size:.74rem;color:rgba(255,255,255,.45);margin-top:6px;">Billed monthly</div>
+        <a href="https://buy.stripe.com/9B6aEW1U6aUBbeI5cH5Ne01" style="display:block;margin-top:auto;padding-top:18px;"><span style="display:block;text-align:center;background:transparent;border:1px solid #333;color:#fff;font-weight:800;font-size:.95rem;padding:13px 0;border-radius:11px;" style-hover="border-color:#fff;">Get Fantasy →</span></a>
+      </div>
+
+      <div style="position:relative;background:#0d0d0d;border:1px solid #39FF14;border-radius:18px;padding:26px 24px 22px;text-align:left;display:flex;flex-direction:column;box-shadow:0 0 34px rgba(57,255,20,.16);">
+        <div style="position:absolute;top:-11px;left:50%;transform:translateX(-50%);background:#39FF14;color:#052b00;font-size:.58rem;font-weight:900;letter-spacing:.1em;text-transform:uppercase;padding:4px 12px;border-radius:20px;white-space:nowrap;">Best value · Save 33%</div>
+        <div style="font-size:.68rem;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:#39FF14;margin-bottom:4px;">Yearly</div>
+        <div style="font-size:.78rem;color:rgba(255,255,255,.5);margin-bottom:14px;min-height:34px;">Full season, one payment.</div>
+        <div style="font-family:'Anton',Impact,sans-serif;font-size:2.5rem;line-height:.9;">$39.99<span style="font-family:'Archivo';font-size:.3em;font-weight:600;color:rgba(255,255,255,.5);"> /yr</span></div>
+        <div style="font-size:.74rem;color:rgba(255,255,255,.45);margin-top:6px;">~$3.33/mo</div>
+        <a href="https://buy.stripe.com/7sYeVc9my9QxeqUeNh5Ne00" style="display:block;margin-top:auto;padding-top:18px;"><span style="display:block;text-align:center;background:#39FF14;color:#052b00;font-weight:900;font-size:.95rem;padding:13px 0;border-radius:11px;box-shadow:0 10px 28px rgba(57,255,20,.28);" style-hover="background:#4dff2b;">Get Fantasy →</span></a>
+      </div>
+
+      <div style="background:#0d0d0d;border:1px solid rgba(255,255,255,.14);border-radius:18px;padding:26px 24px 22px;text-align:left;display:flex;flex-direction:column;">
+        <div style="font-size:.68rem;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.45);margin-bottom:4px;">League / Team</div>
+        <div style="font-size:.78rem;color:rgba(255,255,255,.5);margin-bottom:14px;min-height:34px;">Bring your whole league along.</div>
+        <div style="font-family:'Anton',Impact,sans-serif;font-size:2.5rem;line-height:.9;">$99.99<span style="font-family:'Archivo';font-size:.3em;font-weight:600;color:rgba(255,255,255,.5);"> /yr</span></div>
+        <div style="font-size:.74rem;color:rgba(255,255,255,.45);margin-top:6px;">One price for the group</div>
+        <a href="https://buy.stripe.com/6oUbJ02Ya1k1fuY9sX5Ne07" style="display:block;margin-top:auto;padding-top:18px;"><span style="display:block;text-align:center;background:#F52C05;color:#fff;font-weight:900;font-size:.95rem;padding:13px 0;border-radius:11px;box-shadow:0 10px 28px rgba(245,44,5,.28);" style-hover="background:#ff3d12;">Get the League →</span></a>
       </div>
     </div>
-  </section>
 
-  <section>
-    <div class="wrap">
-      <h2>Plus the entire FBIQ app 🔓</h2>
-      <p class="sub" style="text-align:center; margin:-8px auto 24px;">Fantasy isn't just the fantasy content — you get <strong style="color:#fff;">full access to everything in FBIQ Premier</strong>, unlocked from day one.</p>
-      <div class="features">
-        <div class="feat"><div class="ic">🗄️</div><div class="t">Every Database</div><div class="d">Full access to all of it — rules, terminology, situations, positions, schemes, history, and every bank we add.</div></div>
-        <div class="feat"><div class="ic">⚔️</div><div class="t">FB 1 on 1</div><div class="d">Challenge anyone head-to-head, real time. Prove who really knows ball.</div></div>
-        <div class="feat"><div class="ic">🎯</div><div class="t">FBhoot</div><div class="d">Live multiplayer quiz — host a game and play with your whole league at once.</div></div>
-        <div class="feat"><div class="ic">🏈</div><div class="t">Unlimited Trivia & Games</div><div class="d">NCAA & NFL trivia with no cap, plus Drive, Red Zone, 4th &amp; Long and more.</div></div>
-        <div class="feat"><div class="ic">🎓</div><div class="t">The Full Learning System</div><div class="d">Learn the game like a coach — every mode, every difficulty, no XP gates.</div></div>
-        <div class="feat"><div class="ic">🏆</div><div class="t">XP, Cards & Leaderboards</div><div class="d">Earn XP, level up from Rookie to Legend, collect cards, and climb the board.</div></div>
-      </div>
+    <a href="https://fbiq.app/play" style="position:relative;display:inline-block;color:rgba(255,255,255,.7);font-weight:800;font-size:.95rem;border-bottom:1px solid rgba(255,255,255,.25);padding-bottom:2px;" style-hover="color:#fff;border-color:#fff;">Just want to play free trivia first? →</a>
+    <p style="position:relative;color:rgba(255,255,255,.42);font-size:.8rem;max-width:58ch;margin:26px auto 0;line-height:1.55;">After you pay, we'll email you to finish setting up your account — use that same email and your subscription unlocks automatically. Cancel anytime; you keep access through the end of your billing period.</p>
+  </header>
+
+  <!-- MANTRA BAND -->
+  <div style="border-bottom:1px solid rgba(255,255,255,.1);">
+    <div style="max-width:1040px;margin:0 auto;padding:34px 24px;display:flex;gap:16px;justify-content:center;flex-wrap:wrap;font-family:'Anton',Impact,sans-serif;font-size:clamp(20px,4vw,38px);letter-spacing:.06em;text-transform:uppercase;line-height:1;">
+      <span>Train the Brain.</span>
+      <span style="color:#39FF14;">Win the Game.</span>
     </div>
-  </section>
-
-  <section>
-    <div class="wrap faq">
-      <h2>Questions</h2>
-      <div class="qa"><div class="q">How does signing up work?</div><div class="a">Pick a plan and check out. After you pay, we email you to create your username and password — use the same email you paid with, and your subscription unlocks automatically.</div></div>
-      <div class="qa"><div class="q">Monthly, yearly, or league — which one?</div><div class="a">Same full Fantasy access on all three. Yearly ($39.99) is about 33% cheaper than paying monthly. The League plan ($99.99/yr) is the deal if you want to bring your whole league or team along.</div></div>
-      <div class="qa"><div class="q">Can I cancel?</div><div class="a">Anytime. You keep full access through the end of the period you already paid for, then it simply doesn't renew.</div></div>
-      <div class="qa"><div class="q">Is there a free version?</div><div class="a">Yes — you can <a href="https://fbiq.app/play" style="color:var(--green);">play free fantasy trivia</a> anytime. Fantasy unlocks the full learning system.</div></div>
-    </div>
-  </section>
-
-  <div class="wrap" style="text-align:center; padding:48px 0 8px;">
-    <h2 style="margin-bottom:10px;">Draft smarter this season.</h2>
-    <p class="sub" style="margin-bottom:22px;">$4.99/mo, $39.99/yr, or $99.99 for your whole league.</p>
-    <a class="buy" style="display:inline-block; padding:15px 40px; max-width:none;" href="https://buy.stripe.com/7sYeVc9my9QxeqUeNh5Ne00">Get Fantasy 🏆</a>
   </div>
 
-  <footer>
-    <div class="wrap"><span class="logo" style="font-size:1rem;"><span class="fb">FB</span><span class="iq">IQ</span></span> · a VYZNIQ app · <a href="/" style="color:var(--muted);">vyzniq.com</a></div>
+  <!-- WHAT YOU GET -->
+  <section style="max-width:1040px;margin:0 auto;padding:84px 24px 40px;">
+    <div style="font-family:'Anton',Impact,sans-serif;font-size:14px;letter-spacing:.32em;text-transform:uppercase;color:#39FF14;margin-bottom:10px;padding-left:.32em;text-align:center;">The fantasy edge</div>
+    <h2 style="font-family:'Anton',Impact,sans-serif;font-size:clamp(30px,5.5vw,54px);letter-spacing:.5px;text-transform:uppercase;line-height:.95;text-align:center;margin-bottom:14px;">Every decision, coached.</h2>
+    <p style="color:rgba(255,255,255,.58);font-size:1.05rem;text-align:center;max-width:58ch;margin:0 auto 44px;">From draft night to the championship — the reps, the reasoning, and the edge to out-manage your league.</p>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px;">
+      
+        <div style="background:#0d0d0d;border:1px solid rgba(255,255,255,.1);border-radius:16px;padding:26px 24px;display:flex;flex-direction:column;gap:8px;" style-hover="border-color:rgba(57,255,20,.4);">
+          <div style="font-family:'Anton',Impact,sans-serif;font-size:1.4rem;color:#39FF14;line-height:1;letter-spacing:1px;">01</div>
+          <div style="font-weight:900;font-size:1.08rem;margin-top:4px;">Draft Strategy</div>
+          <div style="color:rgba(255,255,255,.55);font-size:.88rem;line-height:1.5;">ADP, value picks, positional tiers, Zero-RB, superflex, dynasty — draft like you have done it a hundred times.</div>
+        </div>
+      
+
+        <div style="background:#0d0d0d;border:1px solid rgba(255,255,255,.1);border-radius:16px;padding:26px 24px;display:flex;flex-direction:column;gap:8px;" style-hover="border-color:rgba(57,255,20,.4);">
+          <div style="font-family:'Anton',Impact,sans-serif;font-size:1.4rem;color:#39FF14;line-height:1;letter-spacing:1px;">02</div>
+          <div style="font-weight:900;font-size:1.08rem;margin-top:4px;">Start / Sit Decisions</div>
+          <div style="color:rgba(255,255,255,.55);font-size:.88rem;line-height:1.5;">Matchups, floor vs. ceiling, target share, weather, Vegas lines — make the right call every week.</div>
+        </div>
+      
+
+        <div style="background:#0d0d0d;border:1px solid rgba(255,255,255,.1);border-radius:16px;padding:26px 24px;display:flex;flex-direction:column;gap:8px;" style-hover="border-color:rgba(57,255,20,.4);">
+          <div style="font-family:'Anton',Impact,sans-serif;font-size:1.4rem;color:#39FF14;line-height:1;letter-spacing:1px;">03</div>
+          <div style="font-weight:900;font-size:1.08rem;margin-top:4px;">Waiver Wire & FAAB</div>
+          <div style="color:rgba(255,255,255,.55);font-size:.88rem;line-height:1.5;">Budget your FAAB, time your claims, and find the streamers and stashes before your league does.</div>
+        </div>
+      
+
+        <div style="background:#0d0d0d;border:1px solid rgba(255,255,255,.1);border-radius:16px;padding:26px 24px;display:flex;flex-direction:column;gap:8px;" style-hover="border-color:rgba(57,255,20,.4);">
+          <div style="font-family:'Anton',Impact,sans-serif;font-size:1.4rem;color:#39FF14;line-height:1;letter-spacing:1px;">04</div>
+          <div style="font-weight:900;font-size:1.08rem;margin-top:4px;">Trade Evaluation</div>
+          <div style="color:rgba(255,255,255,.55);font-size:.88rem;line-height:1.5;">Know a fair deal from a fleece — buy low, sell high, and negotiate with leverage.</div>
+        </div>
+      
+
+        <div style="background:#0d0d0d;border:1px solid rgba(255,255,255,.1);border-radius:16px;padding:26px 24px;display:flex;flex-direction:column;gap:8px;" style-hover="border-color:rgba(57,255,20,.4);">
+          <div style="font-family:'Anton',Impact,sans-serif;font-size:1.4rem;color:#39FF14;line-height:1;letter-spacing:1px;">05</div>
+          <div style="font-weight:900;font-size:1.08rem;margin-top:4px;">Streaming Positions</div>
+          <div style="color:rgba(255,255,255,.55);font-size:.88rem;line-height:1.5;">QB, TE, D/ST, kicker — when to stream, who to target, and how to squeeze out points.</div>
+        </div>
+      
+
+        <div style="background:#0d0d0d;border:1px solid rgba(255,255,255,.1);border-radius:16px;padding:26px 24px;display:flex;flex-direction:column;gap:8px;" style-hover="border-color:rgba(57,255,20,.4);">
+          <div style="font-family:'Anton',Impact,sans-serif;font-size:1.4rem;color:#39FF14;line-height:1;letter-spacing:1px;">06</div>
+          <div style="font-weight:900;font-size:1.08rem;margin-top:4px;">Gamified Learning</div>
+          <div style="color:rgba(255,255,255,.55);font-size:.88rem;line-height:1.5;">Earn XP, level up, collect cards, and climb the leaderboard while you get sharper.</div>
+        </div>
+      
+    </div>
+  </section>
+
+  <!-- PLUS THE FULL APP -->
+  <section style="max-width:1040px;margin:0 auto;padding:64px 24px 40px;">
+    <div style="background:radial-gradient(ellipse at 80% 0%,rgba(245,44,5,.14),transparent 55%),#0d0d0d;border:1px solid rgba(255,255,255,.12);border-radius:22px;padding:clamp(32px,5vw,52px);">
+      <div style="text-align:center;margin-bottom:36px;">
+        <div style="display:inline-block;font-size:.66rem;font-weight:900;letter-spacing:.16em;text-transform:uppercase;color:#F52C05;border:1px solid rgba(245,44,5,.4);border-radius:30px;padding:6px 14px;margin-bottom:16px;">Everything unlocked</div>
+        <h2 style="font-family:'Anton',Impact,sans-serif;font-size:clamp(28px,5vw,48px);letter-spacing:.5px;text-transform:uppercase;line-height:.95;margin-bottom:14px;">Plus the entire FBIQ app.</h2>
+        <p style="color:rgba(255,255,255,.6);font-size:1.02rem;max-width:60ch;margin:0 auto;">Fantasy isn't only the fantasy content — you get full <span style="color:#fff;font-weight:800;">FBIQ Premier</span> access from day one. Every mode, every rule set, no gates.</p>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px;">
+        
+          <div style="background:#000;border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:22px 22px;display:flex;flex-direction:column;gap:7px;">
+            <div style="font-weight:900;font-size:1.02rem;">Every Database</div>
+            <div style="color:rgba(255,255,255,.52);font-size:.85rem;line-height:1.45;">Rules, terminology, situations, positions, schemes, history — and every bank we add.</div>
+          </div>
+        
+
+          <div style="background:#000;border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:22px 22px;display:flex;flex-direction:column;gap:7px;">
+            <div style="font-weight:900;font-size:1.02rem;">FB 1-on-1</div>
+            <div style="color:rgba(255,255,255,.52);font-size:.85rem;line-height:1.45;">Challenge anyone head-to-head, real time. Prove who really knows ball.</div>
+          </div>
+        
+
+          <div style="background:#000;border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:22px 22px;display:flex;flex-direction:column;gap:7px;">
+            <div style="font-weight:900;font-size:1.02rem;">FBhoot Live</div>
+            <div style="color:rgba(255,255,255,.52);font-size:.85rem;line-height:1.45;">Live multiplayer quiz — host a game and play with your whole league at once.</div>
+          </div>
+        
+
+          <div style="background:#000;border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:22px 22px;display:flex;flex-direction:column;gap:7px;">
+            <div style="font-weight:900;font-size:1.02rem;">Unlimited Trivia & Games</div>
+            <div style="color:rgba(255,255,255,.52);font-size:.85rem;line-height:1.45;">NCAA & NFL trivia with no cap, plus Drive, Red Zone, 4th & Long and more.</div>
+          </div>
+        
+
+          <div style="background:#000;border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:22px 22px;display:flex;flex-direction:column;gap:7px;">
+            <div style="font-weight:900;font-size:1.02rem;">The Full Learning System</div>
+            <div style="color:rgba(255,255,255,.52);font-size:.85rem;line-height:1.45;">Learn the game like a coach — every mode, every difficulty, no XP gates.</div>
+          </div>
+        
+
+          <div style="background:#000;border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:22px 22px;display:flex;flex-direction:column;gap:7px;">
+            <div style="font-weight:900;font-size:1.02rem;">XP, Cards & Leaderboards</div>
+            <div style="color:rgba(255,255,255,.52);font-size:.85rem;line-height:1.45;">Earn XP, level up from Rookie to Legend, collect cards, and climb the board.</div>
+          </div>
+        
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTENT MODULES -->
+  <section style="max-width:1040px;margin:0 auto;padding:64px 24px 40px;">
+    <h2 style="font-family:'Anton',Impact,sans-serif;font-size:clamp(28px,5vw,48px);letter-spacing:.5px;text-transform:uppercase;line-height:.95;text-align:center;margin-bottom:12px;">The whole rulebook comes with it.</h2>
+    <p style="color:rgba(255,255,255,.58);font-size:1.02rem;text-align:center;max-width:56ch;margin:0 auto 40px;">Rules from every level, terminology, situations, and trivia — no caps, no XP gates.</p>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;">
+      
+        <div style="background:#0d0d0d;border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:22px 22px;display:flex;flex-direction:column;gap:7px;" style-hover="border-color:rgba(245,44,5,.4);">
+          <div style="font-weight:900;font-size:1.02rem;">NCAA Rules</div>
+          <div style="color:rgba(255,255,255,.52);font-size:.85rem;line-height:1.45;">College rules across every category — officiating, penalties, formations.</div>
+        </div>
+      
+
+        <div style="background:#0d0d0d;border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:22px 22px;display:flex;flex-direction:column;gap:7px;" style-hover="border-color:rgba(245,44,5,.4);">
+          <div style="font-weight:900;font-size:1.02rem;">NFL Rules</div>
+          <div style="color:rgba(255,255,255,.52);font-size:.85rem;line-height:1.45;">Pro rules and procedures. Penalty specifics, scoring, and replay.</div>
+        </div>
+      
+
+        <div style="background:#0d0d0d;border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:22px 22px;display:flex;flex-direction:column;gap:7px;" style-hover="border-color:rgba(245,44,5,.4);">
+          <div style="font-weight:900;font-size:1.02rem;">NFHS Rules</div>
+          <div style="color:rgba(255,255,255,.52);font-size:.85rem;line-height:1.45;">High school rules for players and officials under the National Federation rulebook.</div>
+        </div>
+      
+
+        <div style="background:#0d0d0d;border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:22px 22px;display:flex;flex-direction:column;gap:7px;" style-hover="border-color:rgba(245,44,5,.4);">
+          <div style="font-weight:900;font-size:1.02rem;">Texas HS (UIL)</div>
+          <div style="color:rgba(255,255,255,.52);font-size:.85rem;line-height:1.45;">Texas-specific high school rules and procedures under the UIL framework.</div>
+        </div>
+      
+
+        <div style="background:#0d0d0d;border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:22px 22px;display:flex;flex-direction:column;gap:7px;" style-hover="border-color:rgba(245,44,5,.4);">
+          <div style="font-weight:900;font-size:1.02rem;">Terminology</div>
+          <div style="color:rgba(255,255,255,.52);font-size:.85rem;line-height:1.45;">Universal football terms, definitions, and concepts for any level.</div>
+        </div>
+      
+
+        <div style="background:#0d0d0d;border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:22px 22px;display:flex;flex-direction:column;gap:7px;" style-hover="border-color:rgba(245,44,5,.4);">
+          <div style="font-weight:900;font-size:1.02rem;">Trivia</div>
+          <div style="color:rgba(255,255,255,.52);font-size:.85rem;line-height:1.45;">NCAA and NFL history, records, players, and game knowledge.</div>
+        </div>
+      
+
+        <div style="background:#0d0d0d;border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:22px 22px;display:flex;flex-direction:column;gap:7px;" style-hover="border-color:rgba(245,44,5,.4);">
+          <div style="font-weight:900;font-size:1.02rem;">Situations</div>
+          <div style="color:rgba(255,255,255,.52);font-size:.85rem;line-height:1.45;">Role-specific situational questions for players, coaches, officials, and fans.</div>
+        </div>
+      
+
+        <div style="background:#0d0d0d;border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:22px 22px;display:flex;flex-direction:column;gap:7px;" style-hover="border-color:rgba(245,44,5,.4);">
+          <div style="font-weight:900;font-size:1.02rem;">Position Knowledge</div>
+          <div style="color:rgba(255,255,255,.52);font-size:.85rem;line-height:1.45;">Deep-dive tracks tailored to every spot on the field.</div>
+        </div>
+      
+    </div>
+  </section>
+
+  <!-- XP LADDER -->
+  <section style="max-width:1040px;margin:0 auto;padding:64px 24px 40px;">
+    <div style="background:#0d0d0d;border:1px solid rgba(255,255,255,.1);border-radius:18px;padding:clamp(28px,4vw,44px);">
+      <div style="font-family:'Anton',Impact,sans-serif;font-size:13px;letter-spacing:.3em;text-transform:uppercase;color:#39FF14;margin-bottom:12px;text-align:center;">Gamified learning</div>
+      <h2 style="font-family:'Anton',Impact,sans-serif;font-size:clamp(26px,4.5vw,44px);letter-spacing:.5px;text-transform:uppercase;line-height:.95;text-align:center;margin-bottom:28px;">Rookie to Legend.</h2>
+      <div style="max-width:620px;margin:0 auto;">
+        
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;padding:13px 0;border-top:1px solid rgba(255,255,255,.08);">
+            <div style="font-weight:800;font-size:1rem;min-width:110px;">Rookie</div>
+            <div style="font-family:'Anton',Impact,sans-serif;font-size:1.1rem;color:#F52C05;letter-spacing:.5px;font-variant-numeric:tabular-nums;">0 XP</div>
+            <div style="flex:1;text-align:right;font-size:.8rem;color:rgba(255,255,255,.5);">Easy difficulty</div>
+          </div>
+        
+
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;padding:13px 0;border-top:1px solid rgba(255,255,255,.08);">
+            <div style="font-weight:800;font-size:1rem;min-width:110px;">Rising Player</div>
+            <div style="font-family:'Anton',Impact,sans-serif;font-size:1.1rem;color:#F52C05;letter-spacing:.5px;font-variant-numeric:tabular-nums;">500 XP</div>
+            <div style="flex:1;text-align:right;font-size:.8rem;color:rgba(255,255,255,.5);">—</div>
+          </div>
+        
+
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;padding:13px 0;border-top:1px solid rgba(255,255,255,.08);">
+            <div style="font-weight:800;font-size:1rem;min-width:110px;">Starter</div>
+            <div style="font-family:'Anton',Impact,sans-serif;font-size:1.1rem;color:#F52C05;letter-spacing:.5px;font-variant-numeric:tabular-nums;">1,500 XP</div>
+            <div style="flex:1;text-align:right;font-size:.8rem;color:rgba(255,255,255,.5);">Hard unlocked</div>
+          </div>
+        
+
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;padding:13px 0;border-top:1px solid rgba(255,255,255,.08);">
+            <div style="font-weight:800;font-size:1rem;min-width:110px;">All-Star</div>
+            <div style="font-family:'Anton',Impact,sans-serif;font-size:1.1rem;color:#F52C05;letter-spacing:.5px;font-variant-numeric:tabular-nums;">3,500 XP</div>
+            <div style="flex:1;text-align:right;font-size:.8rem;color:rgba(255,255,255,.5);">—</div>
+          </div>
+        
+
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;padding:13px 0;border-top:1px solid rgba(255,255,255,.08);">
+            <div style="font-weight:800;font-size:1rem;min-width:110px;">All-American</div>
+            <div style="font-family:'Anton',Impact,sans-serif;font-size:1.1rem;color:#F52C05;letter-spacing:.5px;font-variant-numeric:tabular-nums;">7,500 XP</div>
+            <div style="flex:1;text-align:right;font-size:.8rem;color:rgba(255,255,255,.5);">Super Hard unlocked</div>
+          </div>
+        
+
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;padding:13px 0;border-top:1px solid rgba(255,255,255,.08);">
+            <div style="font-weight:800;font-size:1rem;min-width:110px;">Legend</div>
+            <div style="font-family:'Anton',Impact,sans-serif;font-size:1.1rem;color:#F52C05;letter-spacing:.5px;font-variant-numeric:tabular-nums;">15,000 XP</div>
+            <div style="flex:1;text-align:right;font-size:.8rem;color:rgba(255,255,255,.5);">Top of leaderboard</div>
+          </div>
+        
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section style="max-width:740px;margin:0 auto;padding:40px 24px 40px;">
+    <h2 style="font-family:'Anton',Impact,sans-serif;font-size:clamp(28px,5vw,44px);letter-spacing:.5px;text-transform:uppercase;line-height:.95;text-align:center;margin-bottom:32px;">Questions</h2>
+    <div style="display:flex;flex-direction:column;gap:12px;">
+      
+        <div style="background:#0d0d0d;border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:20px 22px;">
+          <div style="font-weight:800;font-size:1rem;margin-bottom:8px;">How does signing up work?</div>
+          <div style="color:rgba(255,255,255,.58);font-size:.92rem;line-height:1.55;">Pick a plan and check out. After you pay we email you to create your username and password — use the same email you paid with, and your subscription unlocks automatically.</div>
+        </div>
+      
+
+        <div style="background:#0d0d0d;border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:20px 22px;">
+          <div style="font-weight:800;font-size:1rem;margin-bottom:8px;">Monthly, yearly, or league — which one?</div>
+          <div style="color:rgba(255,255,255,.58);font-size:.92rem;line-height:1.55;">Same full Fantasy access on all three. Yearly ($39.99) is about 33% cheaper than paying monthly. The League plan ($99.99/yr) is the deal if you want to bring your whole league or team along.</div>
+        </div>
+      
+
+        <div style="background:#0d0d0d;border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:20px 22px;">
+          <div style="font-weight:800;font-size:1rem;margin-bottom:8px;">Can I cancel?</div>
+          <div style="color:rgba(255,255,255,.58);font-size:.92rem;line-height:1.55;">Anytime. You keep full access through the end of the period you already paid for, then it simply does not renew.</div>
+        </div>
+      
+
+        <div style="background:#0d0d0d;border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:20px 22px;">
+          <div style="font-weight:800;font-size:1rem;margin-bottom:8px;">Is there a free version?</div>
+          <div style="color:rgba(255,255,255,.58);font-size:.92rem;line-height:1.55;">Yes — you can play free fantasy trivia anytime at fbiq.app/play. Fantasy unlocks the full learning system.</div>
+        </div>
+      
+    </div>
+  </section>
+
+  <!-- FINAL CTA -->
+  <section style="position:relative;overflow:hidden;text-align:center;padding:88px 24px 96px;border-top:1px solid rgba(255,255,255,.1);">
+    <div style="position:absolute;bottom:-380px;left:50%;transform:translateX(-50%);width:1100px;height:760px;pointer-events:none;background:radial-gradient(ellipse at center,rgba(245,44,5,.24),rgba(245,44,5,.05) 44%,transparent 70%);"></div>
+    <h2 style="position:relative;font-family:'Anton',Impact,sans-serif;font-size:clamp(38px,7.5vw,74px);letter-spacing:.5px;text-transform:uppercase;line-height:.9;margin-bottom:16px;">Draft <span style="color:#39FF14;text-shadow:0 0 12px rgba(57,255,20,.6);">smarter</span> this season.</h2>
+    <p style="position:relative;color:rgba(255,255,255,.62);font-size:1.08rem;max-width:48ch;margin:0 auto 36px;">$4.99/mo, $39.99/yr, or $99.99 for your whole league.</p>
+    <div style="position:relative;display:flex;gap:14px;justify-content:center;flex-wrap:wrap;">
+      <a href="https://buy.stripe.com/7sYeVc9my9QxeqUeNh5Ne00" style="display:inline-block;background:#39FF14;color:#052b00;font-weight:900;font-size:1.05rem;padding:16px 34px;border-radius:12px;letter-spacing:.02em;box-shadow:0 12px 34px rgba(57,255,20,.3);" style-hover="background:#4dff2b;">Get Fantasy — $39.99/yr</a>
+      <a href="https://buy.stripe.com/6oUbJ02Ya1k1fuY9sX5Ne07" style="display:inline-block;background:transparent;border:1px solid #333;color:#fff;font-weight:800;font-size:1.05rem;padding:16px 30px;border-radius:12px;letter-spacing:.02em;" style-hover="border-color:#fff;">Get the League →</a>
+    </div>
+  </section>
+
+  <footer style="border-top:1px solid rgba(255,255,255,.1);text-align:center;padding:30px 24px 50px;color:rgba(255,255,255,.4);font-size:.8rem;letter-spacing:.04em;">
+    <span style="font-family:'Anton',Impact,sans-serif;font-size:1rem;letter-spacing:1px;"><span style="color:#F52C05;">FB</span><span style="color:#fff;">IQ</span></span> · a <span style="font-weight:900;color:#fff;">Vyzn<span style="color:#fff;">IQ</span></span> app · <a href="/" style="color:rgba(255,255,255,.55);" style-hover="color:#fff;">vyzniq.com</a>
   </footer>
+
+</div>
+<script>
+document.querySelectorAll('[style-hover]').forEach(function(el){
+  var base=el.getAttribute('style')||'';
+  var hov=el.getAttribute('style-hover');
+  el.addEventListener('mouseenter',function(){el.setAttribute('style',base+';'+hov);});
+  el.addEventListener('mouseleave',function(){el.setAttribute('style',base);});
+});
+</script>
 </body>
 </html>
