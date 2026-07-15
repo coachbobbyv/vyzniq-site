@@ -66,7 +66,7 @@
       </div>
     </div>
 
-    <p style="position:relative;color:rgba(255,255,255,.5);font-size:.85rem;max-width:60ch;margin:0 auto;line-height:1.55;">Pay online and your team is set up automatically — you'll get your team ID and coach login by email, ready to roll. Prefer a walkthrough first? <a href="/#contact" style="color:#39FF14;font-weight:700;" style-hover="color:#4dff2b;">Book a demo →</a></p>
+    <p style="position:relative;color:rgba(255,255,255,.5);font-size:.85rem;max-width:60ch;margin:0 auto;line-height:1.55;">Pay online and your team is set up automatically — you'll get your team ID and coach login by email, ready to roll. Prefer a walkthrough first? <a href="#demo" style="color:#39FF14;font-weight:700;" style-hover="color:#4dff2b;">Book a demo →</a></p>
   </header>
 
   <!-- MANTRA BAND -->
@@ -344,7 +344,7 @@
     <p style="position:relative;color:rgba(255,255,255,.62);font-size:1.08rem;max-width:46ch;margin:0 auto 36px;">Set up in minutes, ready the same day. Prefer to see it first? We'll walk your staff through it.</p>
     <div style="position:relative;display:flex;gap:14px;justify-content:center;flex-wrap:wrap;">
       <a href="https://buy.stripe.com/4gM00icyKfaR82w0Wr5Ne04" style="display:inline-block;background:#F52C05;color:#fff;font-weight:900;font-size:1.05rem;padding:16px 34px;border-radius:12px;letter-spacing:.02em;box-shadow:0 12px 34px rgba(245,44,5,.32);" style-hover="background:#ff3d12;">Get started</a>
-      <a href="/#contact" style="display:inline-block;background:transparent;border:1px solid #39FF14;color:#39FF14;font-weight:800;font-size:1.05rem;padding:16px 30px;border-radius:12px;letter-spacing:.02em;" style-hover="background:#39FF14;color:#052b00;">Book a demo →</a>
+      <a href="#demo" style="display:inline-block;background:transparent;border:1px solid #39FF14;color:#39FF14;font-weight:800;font-size:1.05rem;padding:16px 30px;border-radius:12px;letter-spacing:.02em;" style-hover="background:#39FF14;color:#052b00;">Book a demo →</a>
     </div>
   </section>
 
@@ -354,6 +354,21 @@
 
   
 
+
+  <!-- BOOK A DEMO (inline form) -->
+  <section id="demo" style="max-width:640px;margin:0 auto;padding:64px 24px 48px;">
+    <div style="background:#0d0d0d;border:1px solid rgba(57,255,20,.3);border-radius:18px;padding:clamp(28px,4vw,44px);">
+      <h2 style="font-family:'Anton',Impact,sans-serif;font-size:clamp(26px,4.5vw,40px);letter-spacing:.5px;text-transform:uppercase;line-height:.95;text-align:center;margin-bottom:10px;">Book a demo</h2>
+      <p style="color:rgba(255,255,255,.6);font-size:.98rem;text-align:center;max-width:52ch;margin:0 auto 26px;">Tell us where to reach you and we'll set up a walkthrough. No payment required.</p>
+      <form id="demoForm" style="display:flex;flex-direction:column;gap:12px;max-width:440px;margin:0 auto;">
+        <input name="name" type="text" placeholder="Your name" autocomplete="name" style="width:100%;background:#000;border:1px solid rgba(255,255,255,.18);border-radius:11px;color:#fff;font-family:'Archivo',sans-serif;font-size:1rem;padding:13px 15px;">
+        <input name="email" type="email" required placeholder="Email *" autocomplete="email" style="width:100%;background:#000;border:1px solid rgba(255,255,255,.18);border-radius:11px;color:#fff;font-family:'Archivo',sans-serif;font-size:1rem;padding:13px 15px;">
+        <input name="program" type="text" placeholder="Team / program (optional)" style="width:100%;background:#000;border:1px solid rgba(255,255,255,.18);border-radius:11px;color:#fff;font-family:'Archivo',sans-serif;font-size:1rem;padding:13px 15px;">
+        <button type="submit" style="background:#39FF14;color:#052b00;font-weight:900;font-size:1rem;padding:14px 0;border:none;border-radius:11px;cursor:pointer;box-shadow:0 10px 28px rgba(57,255,20,.28);" style-hover="background:#4dff2b;">Request my demo →</button>
+        <div id="demoMsg" role="status" style="text-align:center;font-size:.9rem;min-height:1.2em;margin-top:2px;"></div>
+      </form>
+    </div>
+  </section>
 </div>
 <script>
 document.querySelectorAll('[style-hover]').forEach(function(el){
@@ -362,6 +377,29 @@ document.querySelectorAll('[style-hover]').forEach(function(el){
   el.addEventListener('mouseenter',function(){el.setAttribute('style',base+';'+hov);});
   el.addEventListener('mouseleave',function(){el.setAttribute('style',base);});
 });
+</script>
+
+<script>
+(function(){
+  var f=document.getElementById('demoForm'); if(!f)return;
+  var msg=document.getElementById('demoMsg');
+  f.addEventListener('submit',function(e){
+    e.preventDefault();
+    var email=(f.email.value||'').trim();
+    if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)){msg.style.color='#ff6b6b';msg.textContent='Enter a valid email so we can reach you.';return;}
+    var btn=f.querySelector('button'), label=btn.textContent;
+    btn.disabled=true; btn.textContent='Sending…'; msg.textContent='';
+    fetch("https://fbiq-ai.coachbobbyv.workers.dev/demo-request",{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({name:(f.name.value||'').trim(),email:email,program:(f.program.value||'').trim(),source:"pro-page"})})
+      .then(function(r){return r.json();})
+      .then(function(j){
+        if(j&&j.ok){f.reset();msg.style.color='#39FF14';msg.textContent="Got it! We'll be in touch shortly.";}
+        else{msg.style.color='#ff6b6b';msg.textContent=(j&&j.error)||'Something went wrong — email results@fbiq.app.';}
+        btn.disabled=false; btn.textContent=label;
+      })
+      .catch(function(){msg.style.color='#ff6b6b';msg.textContent='Network error — please try again.';btn.disabled=false;btn.textContent=label;});
+  });
+})();
 </script>
 </body>
 </html>
